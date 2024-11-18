@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import UserCreationForm
+from .forms import CustomUserCreationForm
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'  # Path to login form template
@@ -8,12 +9,12 @@ class CustomLoginView(LoginView):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('users:login')  # After registration, redirect to login
+            form.save()  # Save the user data
+            return redirect('login')  # Redirect to login after registration
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'users/register.html', {'form': form})
 
 

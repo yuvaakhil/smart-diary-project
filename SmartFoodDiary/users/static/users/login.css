@@ -33,21 +33,22 @@ body {
 }
 
 .inputForm {
-  border: 1.5px solid #ecedec;
-  border-radius: 10px;
-  height: 50px;
   display: flex;
   align-items: center;
-  padding-left: 10px;
-  transition: 0.2s ease-in-out;
+  border: 1px solid #ecedec; /* Light gray border */
+  border-radius: 5px;
+  padding: 8px 12px; /* Adjust padding for better spacing */
+  margin-bottom: 16px; /* Add space between input fields */
+  background-color: #fff;
 }
 
 .input {
-  margin-left: 10px;
-  border-radius: 10px;
-  border: none;
-  width: 85%;
-  height: 100%;
+  flex: 1; /* Make the input field take the remaining space */
+  border: none; /* Remove default border */
+  outline: none; /* Remove outline on focus */
+  padding: 8px; /* Add internal padding */
+  font-size: 16px; /* Adjust font size */
+  color: #151717; /* Dark text color */
 }
 
 .input:focus {
@@ -122,4 +123,29 @@ body {
 
 .btn:hover {
   border: 1px solid #2d79f3;
+}
+.inputForm svg {
+  margin-right: 8px; /* Add spacing between SVG and input */
+  fill: #2d79f3; /* Optional: Change the color of the icons */
+  flex-shrink: 0; /* Prevent SVG from shrinking */
+}
+
+.inputForm:focus-within {
+  border-color: #2d79f3; /* Highlight border when focused */
+}
+
+button.button-submit {
+  width: 100%;
+  background-color: #151717;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button.button-submit:hover {
+  background-color: #252727;
 }
