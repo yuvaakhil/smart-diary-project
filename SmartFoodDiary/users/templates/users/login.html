@@ -4,7 +4,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'users/login.css' %}">
 </head>
 
-<form method="post" action="{% url 'login' %}" class="form">
+<form method="post" action="{% url 'users:login' %}" class="form">
     {% csrf_token %}
     <div class="flex-column">
         <label>Email</label>
@@ -35,6 +35,7 @@
     <p class="p line">Or With</p>
 
     <div class="flex-row">
+        
         <button type="button" class="btn google">
             <img src="https://imgs.search.brave.com/g17BH7ApM9d8-w9e-JPSNcH8j_6dKtlc-P0jl3lYp6Y/rs:fit:32:32:1:0/g:ce/aHR0cDovL2Zhdmlj/b25zLnNlYXJjaC5i/cmF2ZS5jb20vaWNv/bnMvMGIyNDZlZGM5/Y2MxOTI5ODg1NTU5/YTA0YTYxNTEwMjZi/NTZlZDY4NGE2ODVm/OGVjNTg4MzE3ZDMz/YjdhNDI4Yi93d3cu/Z29vZ2xlLmNvbS8" alt="">
             Google</button>

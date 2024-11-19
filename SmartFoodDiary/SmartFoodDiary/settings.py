@@ -37,6 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'users',
 ]
 
@@ -48,7 +53,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
+SITE_ID = 1
 
 ROOT_URLCONF = 'SmartFoodDiary.urls'
 
@@ -80,7 +87,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+from decouple import config
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -127,3 +134,43 @@ STATIC_ROOT = r'C:\Users\yuvaa\Desktop\smart diary\SmartFoodDiary\SmartFoodDiary
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Email backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# SMTP server configuration
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Use TLS encryption
+
+# Your email credentials
+EMAIL_HOST_USER = 'nutriwise.authentication@gmail.com' 
+EMAIL_HOST_PASSWORD = 'yvqx siwg mnjm wond'  
+DEFAULT_FROM_EMAIL =  'Smart Food Diary <nutriwise.authentication@gmail.com>'
+
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+SITE_ID = 1
+
+
+
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'  # Redirect after logout
+
+# Email verification settings
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Forces email verification
+ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Login via email
+ACCOUNT_USERNAME_REQUIRED = False  # Makes username optional
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+LOGIN_URL = '/login/'  # Redirect to login page if not authenticated
