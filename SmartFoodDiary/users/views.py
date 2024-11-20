@@ -1,24 +1,24 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.forms import UserCreationForm
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm  # Import the custom user form once
 from django.core.mail import send_mail
-from django.http import HttpResponse
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
 from django.conf import settings
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 # Custom login view
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
-    
+
+
+def home(request):
+    return render(request, 'users/home.html')
+
+
 def register(request):
     """
     Handles the registration of a new user.
@@ -26,56 +26,43 @@ def register(request):
     - Creates an inactive user and sends an activation email.
     """
     if request.method == 'POST':
-        full_name = request.POST['full_name']
-        username = request.POST['username']
-        email = request.POST['email']
-        phone_number = request.POST['phone_number']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            # Save the user and additional profile fields (full_name, phone_number)
+            user = form.save(commit=False)
+            user.is_active = False  # User will not be active until email is verified
+            user.save()
 
-        # Check for password match
-        if password1 != password2:
-            messages.error(request, "Passwords do not match.")
-            return redirect('users:register')
+            # Send activation email
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            activation_link = request.build_absolute_uri(reverse('users:activate', args=[uid, token]))
 
-        # Check if username or email already exists
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists.")
-            return redirect('users:register')
+            email_subject = "Activate Your Account"
+            email_body = f"""
+            Hi,
 
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "Email already exists.")
-            return redirect('users:register')
+            Thank you for registering on NUTRIWISE. Please click the link below to activate your account:
 
-        # Create the user but leave it inactive until email confirmation
-        user = User.objects.create_user(username=username, email=email, password=password1)
-        user.first_name = full_name
-        user.is_active = False  # User will not be active until email is verified
-        user.save()
+            {activation_link}
 
-        # Send activation email
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        activation_link = request.build_absolute_uri(reverse('users:activate', args=[uid, token]))
+            If you did not register for an account, please ignore this email.
+            """
+            send_mail(email_subject, email_body, settings.EMAIL_HOST_USER, [user.email])
 
-        email_subject = "Activate Your Account"
-        email_body = f"""
-Hi,
+            # Show success message
+            messages.success(request, "Account created! Please check your email to activate your account.")
+            return redirect('users:login')  # Redirect to login page after registration
+        else:
+            # If form is invalid, display errors
+            print(form.errors)
+            messages.error(request, "ensure password length is 8.")
+            return render(request, 'users/register.html', {'form': form})
 
-Thank you for registering on our website. Please click the link below to activate your account:
+    else:
+        form = CustomUserCreationForm()  # Instantiate the form for GET request
 
-{activation_link}
-
-If you did not register for an account, please ignore this email.
-"""
-        send_mail(email_subject, email_body, settings.EMAIL_HOST_USER, [email])
-
-        # Show success message
-        messages.success(request, "Account created! Please check your email to activate your account.")
-        return redirect('users:login')  # Redirect to login page after registration
-
-    return render(request, 'users/register.html')
-
+    return render(request, 'users/register.html', {'form': form})
 
 
 def activate_account(request, uidb64, token):

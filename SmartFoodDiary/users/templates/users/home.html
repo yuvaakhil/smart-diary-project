@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <!-- Load static template tag -->
+    {% load static %}
+    <!-- Link to the static CSS file -->
+    <link rel="stylesheet" type="text/css" href="{% static 'users/home.css' %}">
+</head>
+<body>
+    <div class="banner">
+        <div class="navbar">
+            <!-- Use static tag for the logo -->
+            <img src="{% static 'users/logo5.png' %}" class="logo" alt="NutriWise Logo">
+            <ul>
+                <li><a href="#">Log Meal</a></li>
+                <li><a href="#">Scan Food</a></li>
+                <li><a href="#">Profile/Settings</a></li>
+                <li><a href="#">Progress</a></li>
+                <li><a href="#">Calorie Goal Progress</a></li>
+            </ul>
+        </div>
+        <div class="content">
+            <h1>Hello!! Welcome to NutriWise</h1>
+            <div>
+                <!-- Buttons linking to login and register pages -->
+                <<button type="button" onclick="window.location.href='{% url 'users:login' %}'">
+                    LOG IN
+                </button>
+                <button type="button" onclick="window.location.href='{% url 'users:register' %}'">
+                    REGISTER
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
