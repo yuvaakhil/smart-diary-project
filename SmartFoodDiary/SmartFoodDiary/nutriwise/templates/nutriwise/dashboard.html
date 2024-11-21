@@ -1,0 +1,56 @@
+
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <!-- Top Section -->
+    <div class="header-box">
+        <div class="welcome-section">
+            <!-- Logo and Welcome Text -->
+            <link rel="stylesheet" href="{% static 'nutriwise/dashboard.css' %}">
+            <div class="logo-welcome">
+                <img src="https://i.postimg.cc/CdyBX8WW/NW-LOGO.jpg" alt="NutriWise Logo" class="logo">
+                <div>
+                    <h1>Welcome, {{ user.first_name|default:"User" }}!</h1>
+                    <p>{{ user.email }}</p>
+                </div>
+            </div>
+        </div>
+        <button class="upload-button" >+ Upload</button>
+    </div>
+
+    <!-- Profile and Daily Goals Section -->
+    <div class="main-box">
+        <!-- Profile Section -->
+        <div class="profile-box">
+            <h2>Profile</h2>
+            <div class="profile-grid">
+                <div class="profile-item">
+                    <p>Height</p>
+                    <p>{{ user.profile.height|default:"---" }}</p>
+                </div>
+                <div class="profile-item">
+                    <p>Weight</p>
+                    <p>{{ user.profile.weight|default:"---" }}</p>
+                </div>
+                <div class="profile-item">
+                    <p>Heart Rate</p>
+                    <p>---</p>
+                </div>
+                <div class="profile-item">
+                    <p>BMI</p>
+                    <p>---</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Goals Section -->
+        <div class="goals-box">
+            <h2>Daily Goals</h2>
+            <div class="goal-item">
+                <p>Calorie Goal</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
