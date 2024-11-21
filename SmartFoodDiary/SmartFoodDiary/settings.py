@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',  
-
+    'nutriwise',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -173,23 +173,13 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
-LOGIN_URL = '/login/'  # Redirect to login page if not authenticated
+LOGIN_URL = 'users:login'  # Redirect to login page if not authenticated
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-        'OPTIONS': {
-            'min_length': 6,  # Adjust the minimum length if desired
-        }
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',  # No common_passwords argument
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    # 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    # 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    # 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    # 'django.contrib.auth.password_validation.NumericPasswordValidator',
 ]
+
 

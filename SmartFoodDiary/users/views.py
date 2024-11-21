@@ -1,39 +1,79 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.views import LoginView
-from .forms import CustomUserCreationForm  # Import the custom user form once
-from django.core.mail import send_mail
-from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth import login
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.urls import reverse
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.contrib import messages
+from .forms import CustomUserCreationForm
+from .models import UserProfile
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.urls import reverse
+from .forms import CustomUserCreationForm
+from .models import UserProfile
+from django.conf import settings
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+
 
 # Custom login view
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
+
+    def form_invalid(self, form):
+        """
+        Override form_invalid to check if the user exists and add a custom message if needed.
+        """
+        username = form.cleaned_data.get('username', None)
+        user = User.objects.filter(username=username).first()
+        if not user:
+            messages.error(self.request, "Please register.", extra_tags='register-error')
+        else:
+            messages.error(self.request, "Invalid username or password.", extra_tags='invalid-credentials')
+        return super().form_invalid(form)
 
 
 def home(request):
     return render(request, 'users/home.html')
 
 
+
+
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import CustomUserCreationForm
+
 def register(request):
-    """
-    Handles the registration of a new user.
-    - Checks for password match, existing username, and email.
-    - Creates an inactive user and sends an activation email.
-    """
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            # Save the user and additional profile fields (full_name, phone_number)
+            # Save the user but deactivate until email verification
             user = form.save(commit=False)
-            user.is_active = False  # User will not be active until email is verified
+            user.is_active = False  # Deactivate until email verification
             user.save()
 
-            # Send activation email
+            # Ensure UserProfile is created or updated
+            full_name = form.cleaned_data.get('full_name')
+            phone_number = form.cleaned_data.get('phone_number')
+
+            # Try to get the existing profile or create a new one if none exists
+            profile, created = UserProfile.objects.get_or_create(user=user)
+            if not created:
+                # If the profile exists, update the information
+                profile.full_name = full_name
+                profile.phone_number = phone_number
+                profile.save()
+
+            # Send activation email with token
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             activation_link = request.build_absolute_uri(reverse('users:activate', args=[uid, token]))
@@ -50,19 +90,18 @@ def register(request):
             """
             send_mail(email_subject, email_body, settings.EMAIL_HOST_USER, [user.email])
 
-            # Show success message
             messages.success(request, "Account created! Please check your email to activate your account.")
-            return redirect('users:login')  # Redirect to login page after registration
+            return redirect('users:login')
         else:
-            # If form is invalid, display errors
-            print(form.errors)
-            messages.error(request, "ensure password length is 8.")
+            messages.error(request, "Please correct the errors below.")
             return render(request, 'users/register.html', {'form': form})
 
     else:
-        form = CustomUserCreationForm()  # Instantiate the form for GET request
+        form = CustomUserCreationForm()
+        return render(request, 'users/register.html', {'form': form})
 
-    return render(request, 'users/register.html', {'form': form})
+
+
 
 
 def activate_account(request, uidb64, token):
@@ -105,3 +144,14 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, "The activation link is invalid or expired.")
         return redirect('users:register')
+def login_view(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            login(request, form.get_user())
+            # Redirect to the 'next' URL or default
+            next_url = request.GET.get('next', 'nutriwise:dashboard')
+            return redirect(next_url)
+    else:
+        form = AuthenticationForm()
+    return render(request, 'login.html', {'form': form})

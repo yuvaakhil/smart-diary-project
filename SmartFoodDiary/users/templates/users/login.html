@@ -4,7 +4,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'users/login.css' %}">
 </head>
 
-<form method="post" action="{% url 'users:login' %}" class="form">
+<form method="post" action="{% url 'users:login' %}?next=/nutriwise/" class="form">
+    {% if messages %}
+    <div class="message-container">
+        {% for message in messages %}
+            <p class="error-message {% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
     {% csrf_token %}
     <div class="flex-column">
         <label>Email</label>

@@ -149,3 +149,15 @@ button.button-submit {
 button.button-submit:hover {
   background-color: #252727;
 }
+.error-message {
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.error-message.register-error {
+  color: red;
+}
+
+.error-message.invalid-credentials {
+  color: orange;
+}
