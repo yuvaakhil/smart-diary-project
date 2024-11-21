@@ -11,7 +11,7 @@
             <div class="logo-welcome">
                 <img src="https://i.postimg.cc/CdyBX8WW/NW-LOGO.jpg" alt="NutriWise Logo" class="logo">
                 <div>
-                    <h1>Welcome, {{ user.first_name|default:"User" }}!</h1>
+                    <h1>Welcome, {{ user.username|default:"User" }}!</h1>
                     <p>{{ user.email }}</p>
                 </div>
             </div>
