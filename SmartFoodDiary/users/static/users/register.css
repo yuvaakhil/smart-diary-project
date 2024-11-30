@@ -8,21 +8,29 @@
 }
 
 body {
+    background-image: url('https://i.postimg.cc/K8jQbK4X/Whats-App-Image-2024-11-25-at-20-57-41-b921d103.jpg');
     display: flex;
     height: 100vh;
     justify-content: center;
     align-items: center;
     padding: 10px;
-    background-color: #000; /* Black background */
     color: #fff; /* Default text color is white */
 }
+.invalid {
+    border: 1px solid red;
+}
+.error-message {
+    color: red;
+    font-size: 0.875em;
+}
+
 
 .container {
-    max-width: 700px;
+    max-width: 500px;
     width: 100%;
-    background: #fff; /* White container */
+    background:  #dbf7d2; /* White container */
     color: #000; /* Black text inside the container */
-    padding: 25px 30px;
+    padding: 15px 10px;
     border-radius: 10px; /* Rounded corners */
     box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1); /* Subtle white shadow */
 }
@@ -153,6 +161,7 @@ form .button input:hover {
     font-size: 14px;
     margin: 5px 0;
 }
+
 
 @media (max-width: 584px) {
     .container {

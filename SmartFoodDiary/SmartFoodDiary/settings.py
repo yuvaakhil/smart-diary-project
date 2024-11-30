@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-9i2fatp2-g=&l$!#%najk3ub&zedk^$^ec232_we&(kw8(dtuy
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
 ]
+
 SITE_ID = 1
 
 ROOT_URLCONF = 'SmartFoodDiary.urls'
@@ -87,24 +88,15 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-from decouple import config
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    'django.contrib.auth.password_validation.MinimumLengthValidator',
+    'django.contrib.auth.password_validation.CommonPasswordValidator',
+    'django.contrib.auth.password_validation.NumericPasswordValidator',
 ]
 
 
@@ -124,16 +116,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR /"static"]
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
-STATIC_ROOT = r'C:\Users\yuvaa\Desktop\smart diary\SmartFoodDiary\SmartFoodDiary\static'
-
+# Change STATIC_ROOT to a more appropriate path where the static files will be collected
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # Email backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
@@ -147,13 +140,7 @@ EMAIL_HOST_USER = 'nutriwise.authentication@gmail.com'
 EMAIL_HOST_PASSWORD = 'yvqx siwg mnjm wond'  
 DEFAULT_FROM_EMAIL =  'Smart Food Diary <nutriwise.authentication@gmail.com>'
 
-
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-SITE_ID = 1
-
-
-
+# Ensure this section isn't repeated
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'  # Redirect after logout
 
 # Email verification settings
@@ -161,6 +148,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'  # Forces email verification
 ACCOUNT_AUTHENTICATION_METHOD = 'email'  # Login via email
 ACCOUNT_USERNAME_REQUIRED = False  # Makes username optional
+
 LOGGING = {
     'version': 1,
     'handlers': {
@@ -173,13 +161,5 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+
 LOGIN_URL = 'users:login'  # Redirect to login page if not authenticated
-
-AUTH_PASSWORD_VALIDATORS = [
-    # 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    # 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    # 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    # 'django.contrib.auth.password_validation.NumericPasswordValidator',
-]
-
-

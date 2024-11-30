@@ -14,26 +14,52 @@
         <div class="navbar">
             <!-- Use static tag for the logo -->
             <img src="{% static 'users/logo5.png' %}" class="logo" alt="NutriWise Logo">
-            <ul>
-                <li><a href="#">Log Meal</a></li>
-                <li><a href="#">Scan Food</a></li>
-                <li><a href="#">Profile/Settings</a></li>
-                <li><a href="#">Progress</a></li>
-                <li><a href="#">Calorie Goal Progress</a></li>
-            </ul>
+          
         </div>
         <div class="content">
             <h1>Hello!! Welcome to NutriWise</h1>
             <div>
                 <!-- Buttons linking to login and register pages -->
-                <<button type="button" onclick="window.location.href='{% url 'users:login' %}'">
-                    LOG IN
-                </button>
-                <button type="button" onclick="window.location.href='{% url 'users:register' %}'">
-                    REGISTER
-                </button>
+              <a href="{% url 'users:login' %}">
+    <button type="button">
+        LOG IN
+    </button>
+</a>
+<a href="{% url 'users:register' %}">
+    <button type="button">
+        REGISTER
+    </button>
+</a>
+
             </div>
         </div>
     </div>
+    <footer>
+        <div class="footer-content">
+            <div class="contact-info">
+                <h3>Contact Us</h3>
+                <p>Email: <a href="mailto:nutriwise@gmail.com">nutriwise@gmail.com</a></p>
+                <p>Phone: +1 (123) 456-7890</p>
+                <p>Address: 123 Nutriwise Street, Food City, ABC 12345</p>
+            </div>
+    
+            <div class="social-media">
+                <h3>Follow Us</h3>
+                <a href="facebook.jpg" target="_blank" class="social-icon">Facebook</a>
+                <a href="twitter.jpg" target="_blank" class="social-icon">Twitter</a>
+                <a href="insta.jpg" target="_blank" class="social-icon">Instagram</a>
+                <a href="linkedin.jpg" target="_blank" class="social-icon">LinkedIn</a>
+            </div>
+    
+            <div class="newsletter">
+                <h3>Subscribe to Our Newsletter</h3>
+            </div>
+        </div>
+    
+        <div class="footer-bottom">
+            <p>&copy; 2024 NutriWise. All Rights Reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+    
 </body>
 </html>

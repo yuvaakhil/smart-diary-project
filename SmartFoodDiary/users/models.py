@@ -9,7 +9,7 @@ class UserProfile(models.Model):
     full_name = models.CharField(max_length=255)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
 
-    def __str__(self):
+    def _str_(self):
         return self.user.username
     
 
@@ -21,4 +21,3 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
-

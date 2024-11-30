@@ -12,16 +12,8 @@ from django.core.mail import send_mail
 from django.contrib import messages
 from .forms import CustomUserCreationForm
 from .models import UserProfile
-from django.contrib.auth.tokens import default_token_generator
-from django.core.mail import send_mail
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.urls import reverse
-from .forms import CustomUserCreationForm
-from .models import UserProfile
-from django.conf import settings
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
+from django.http import JsonResponse
+import re  # For regex validation
 
 
 # Custom login view
@@ -45,17 +37,41 @@ def home(request):
     return render(request, 'users/home.html')
 
 
-
-
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import CustomUserCreationForm
-
+# Registration view with validation
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
+        
+        # Form is valid, but we need additional validation
         if form.is_valid():
+            # Validate username
+            username = form.cleaned_data['username']
+            if len(username) < 8 or not re.search(r'[@/_]', username):
+                form.add_error('username', "Username must be at least 8 characters long and include one of the following: @, /, or _.")
+
+            # Validate phone number (must contain exactly 10 digits)
+            phone_number = form.cleaned_data['phone_number']
+            if len(phone_number) != 10 or not phone_number.isdigit():
+                form.add_error('phone_number', "Phone number must contain exactly 10 digits.")
+
+            # Validate passwords
+            password1 = form.cleaned_data['password1']
+            password2 = form.cleaned_data['password2']
+            if password1 != password2:
+                form.add_error('password2', "Passwords do not match.")
+            elif len(password1) < 8:
+                form.add_error('password1', "Password must be at least 8 characters long.")
+
+            # Check if email already exists
+            email = form.cleaned_data['email']
+            if User.objects.filter(email=email).exists():
+                form.add_error('email', "This email is already registered.")
+
+            # If there are any form errors, return to the registration page with error messages
+            if form.errors:
+                messages.error(request, "Please correct the errors below.")
+                return render(request, 'users/register.html', {'form': form})
+            
             # Save the user but deactivate until email verification
             user = form.save(commit=False)
             user.is_active = False  # Deactivate until email verification
@@ -65,10 +81,8 @@ def register(request):
             full_name = form.cleaned_data.get('full_name')
             phone_number = form.cleaned_data.get('phone_number')
 
-            # Try to get the existing profile or create a new one if none exists
             profile, created = UserProfile.objects.get_or_create(user=user)
             if not created:
-                # If the profile exists, update the information
                 profile.full_name = full_name
                 profile.phone_number = phone_number
                 profile.save()
@@ -80,7 +94,7 @@ def register(request):
 
             email_subject = "Activate Your Account"
             email_body = f"""
-            Hi,
+            Hi {user.username},
 
             Thank you for registering on NUTRIWISE. Please click the link below to activate your account:
 
@@ -92,6 +106,7 @@ def register(request):
 
             messages.success(request, "Account created! Please check your email to activate your account.")
             return redirect('users:login')
+
         else:
             messages.error(request, "Please correct the errors below.")
             return render(request, 'users/register.html', {'form': form})
@@ -101,14 +116,8 @@ def register(request):
         return render(request, 'users/register.html', {'form': form})
 
 
-
-
-
+# Account activation view
 def activate_account(request, uidb64, token):
-    """
-    Activates a user account after clicking on the activation link.
-    - Decodes the user ID and token, checks if valid, and activates the user.
-    """
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
@@ -125,25 +134,7 @@ def activate_account(request, uidb64, token):
         return redirect('users:register')
 
 
-def activate(request, uidb64, token):
-    """
-    This function is an alternative for handling the activation link after the user clicks.
-    It's also an activation endpoint if the first one doesn't work.
-    """
-    try:
-        uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
-    except (User.DoesNotExist, ValueError, TypeError):
-        user = None
-
-    if user and default_token_generator.check_token(user, token):
-        user.is_active = True
-        user.save()
-        messages.success(request, "Your account has been activated! You can now log in.")
-        return redirect('users:login')
-    else:
-        messages.error(request, "The activation link is invalid or expired.")
-        return redirect('users:register')
+# Login view
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -155,3 +146,7 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
+def check_email(request):
+    email = request.GET.get('email', None)
+    exists = User.objects.filter(email=email).exists()
+    return JsonResponse({'exists': exists})

@@ -1,13 +1,9 @@
-# smartfooddiary/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
-
 urlpatterns = [
-    path('', include('users.urls')),
-    path('users/', include('users.urls', namespace='users')),
-    path('admin/', admin.site.urls),
-    path('users/', include('users.urls')),  
-    path('accounts/', include('allauth.urls')),
-    path('nutriwise/', include('nutriwise.urls'))
+    path('admin/', admin.site.urls),  # Admin panel URL
+    path('accounts/', include('allauth.urls')),  # Allauth URLs for authentication
+    path('', include('users.urls', namespace='users')),  # Default users URLs (e.g., login, signup)
+    path('nutriwise/', include('nutriwise.urls'))  # Nutriwise app URLs (dashboard, etc.)
 ]

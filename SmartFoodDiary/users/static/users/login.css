@@ -1,163 +1,175 @@
-/* Add this to the body or a parent container */
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  display: flex;
-  justify-content: center;   /* Centers the form horizontally */
-  align-items: center;       /* Centers the form vertically */
-  height: 100vh;             /* Ensures full viewport height */
-  margin: 0;                 /* Removes default margin */
-  background-color: #f4f4f4; /* Optional: set a background color */
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  background-color: #ffffff;
-  padding: 30px;
-  width: 450px;
-  border-radius: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-::placeholder {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}
-
-.form button {
-  align-self: flex-end;
-}
-
-.flex-column > label {
-  color: #151717;
-  font-weight: 600;
-}
-
-.inputForm {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ecedec; /* Light gray border */
-  border-radius: 5px;
-  padding: 8px 12px; /* Adjust padding for better spacing */
-  margin-bottom: 16px; /* Add space between input fields */
-  background-color: #fff;
-}
-
-.input {
-  flex: 1; /* Make the input field take the remaining space */
-  border: none; /* Remove default border */
-  outline: none; /* Remove outline on focus */
-  padding: 8px; /* Add internal padding */
-  font-size: 16px; /* Adjust font size */
-  color: #151717; /* Dark text color */
-}
-
-.input:focus {
-  outline: none;
-}
-
-.inputForm:focus-within {
-  border: 1.5px solid #2d79f3;
-}
-
-.flex-row {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-  justify-content: space-between;
-}
-
-.flex-row > div > label {
-  font-size: 14px;
-  color: black;
-  font-weight: 400;
-}
-
-.span {
-  font-size: 14px;
-  margin-left: 5px;
-  color: #2d79f3;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.button-submit {
-  margin: 20px 0 10px 0;
-  background-color: #151717;
-  border: none;
-  color: white;
-  font-size: 15px;
-  font-weight: 500;
-  border-radius: 10px;
-  height: 50px;
-  width: 100%;
-  cursor: pointer;
-}
-
-.button-submit:hover {
-  background-color: #252727;
-}
-
-.p {
-  text-align: center;
-  color: black;
-  font-size: 14px;
-  margin: 5px 0;
-}
-
-.btn {
-  margin-top: 10px;
-  width: 100%;
-  height: 50px;
-  border-radius: 10px;
+  background-image: url('https://i.postimg.cc/mgMkPsdd/Whats-App-Image-2024-11-25-at-20-58-58-a1a33716.jpg');
+  background-size: cover; /* Ensures the image covers the entire background */
+  background-position: center; /* Centers the image */
+  font-family: 'Arial', sans-serif;
+  color: #333;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: 500;
+  min-height: 100vh;
+}
+
+.form {
+  background: #dbf7d2;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Form Labels */
+.flex-column label {
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  display: block;
+  color: #555;
+}
+
+/* Input Fields */
+.inputForm {
+  display: flex;
+  align-items: center;
   gap: 10px;
-  border: 1px solid #ededef;
-  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  background: #f9f9f9;
+}
+
+.inputForm svg {
+  color: #888;
+}
+
+.input {
+  border: none;
+  outline: none;
+  width: 100%;
+  background: none;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.input::placeholder {
+  color: #aaa;
+}
+
+/* Buttons */
+.button-submit {
+  background: #007BFF;
+  color: #fff;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
-  transition: 0.2s ease-in-out;
+  transition: background 0.3s ease;
+}
+
+.button-submit:hover {
+  background: #0056b3;
+}
+
+/* Error Messages */
+.message-container {
+  margin-bottom: 15px;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+/* Links and Or Section */
+.p {
+  font-size: 0.9rem;
+  text-align: center;
+  color: #555;
+}
+
+.p a {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.p a:hover {
+  text-decoration: underline;
+}
+
+.line {
+  margin-top: 10px;
+  font-style: italic;
+  color: #888;
+}
+
+/* Social Login */
+.flex-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn img {
+  height: 20px;
+  width: 20px;
 }
 
 .btn:hover {
-  border: 1px solid #2d79f3;
-}
-.inputForm svg {
-  margin-right: 8px; /* Add spacing between SVG and input */
-  fill: #2d79f3; /* Optional: Change the color of the icons */
-  flex-shrink: 0; /* Prevent SVG from shrinking */
+  background: #e9e9e9;
+  transform: translateY(-2px);
 }
 
-.inputForm:focus-within {
-  border-color: #2d79f3; /* Highlight border when focused */
-}
-
-button.button-submit {
-  width: 100%;
-  background-color: #151717;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 12px;
-  font-size: 16px;
+/* Toggle Password */
+#togglePassword {
+  color: #888;
   cursor: pointer;
-  transition: background-color 0.3s;
 }
 
-button.button-submit:hover {
-  background-color: #252727;
-}
-.error-message {
-  font-size: 14px;
-  margin-top: 10px;
+#togglePassword:hover {
+  color: #555;
 }
 
-.error-message.register-error {
-  color: red;
-}
+/* Responsive Design */
+@media (max-width: 480px) {
+  .form {
+      padding: 20px;
+  }
 
-.error-message.invalid-credentials {
-  color: orange;
+  .button-submit {
+      font-size: 0.9rem;
+  }
+
+  .p {
+      font-size: 0.8rem;
+  }
 }

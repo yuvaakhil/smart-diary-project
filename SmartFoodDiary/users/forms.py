@@ -18,6 +18,13 @@ class CustomUserCreationForm(UserCreationForm):
             raise forms.ValidationError("A user with that username already exists.")
         return username
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        # Ensure email is unique
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email should be unique and not already registered.")
+        return email
+
     def clean_password1(self):
         password1 = self.cleaned_data.get("password1")
         # Skip all password validations like common passwords or numeric-only checks
