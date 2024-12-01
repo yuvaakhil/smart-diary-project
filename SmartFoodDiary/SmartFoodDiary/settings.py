@@ -93,11 +93,20 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    'django.contrib.auth.password_validation.MinimumLengthValidator',
-    'django.contrib.auth.password_validation.CommonPasswordValidator',
-    'django.contrib.auth.password_validation.NumericPasswordValidator',
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
+
 
 
 # Internationalization
@@ -163,3 +172,4 @@ LOGGING = {
 }
 
 LOGIN_URL = 'users:login'  # Redirect to login page if not authenticated
+# This ensures the user is redirected to the login page after logout

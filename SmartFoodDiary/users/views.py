@@ -13,13 +13,14 @@ from django.contrib import messages
 from .forms import CustomUserCreationForm
 from .models import UserProfile
 from django.http import JsonResponse
+from django.urls import reverse_lazy
 import re  # For regex validation
 
 
 # Custom login view
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
-
+    
     def form_invalid(self, form):
         """
         Override form_invalid to check if the user exists and add a custom message if needed.
@@ -44,31 +45,34 @@ def register(request):
         
         # Form is valid, but we need additional validation
         if form.is_valid():
-            # Validate username
+            # Additional validation after form validation
             username = form.cleaned_data['username']
-            if len(username) < 8 or not re.search(r'[@/_]', username):
-                form.add_error('username', "Username must be at least 8 characters long and include one of the following: @, /, or _.")
-
-            # Validate phone number (must contain exactly 10 digits)
             phone_number = form.cleaned_data['phone_number']
-            if len(phone_number) != 10 or not phone_number.isdigit():
-                form.add_error('phone_number', "Phone number must contain exactly 10 digits.")
-
-            # Validate passwords
             password1 = form.cleaned_data['password1']
             password2 = form.cleaned_data['password2']
+            email = form.cleaned_data['email']
+
+            # Validate username
+            if len(username) < 8 or not re.search(r'[@/_]', username):
+                form.add_error('username', "Username must be at least 8 characters long and include one of the following: @, /, or _.")
+            
+            # Validate phone number
+            if len(phone_number) != 10 or not phone_number.isdigit():
+                form.add_error('phone_number', "Phone number must contain exactly 10 digits.")
+            
+            # Validate passwords
             if password1 != password2:
                 form.add_error('password2', "Passwords do not match.")
             elif len(password1) < 8:
                 form.add_error('password1', "Password must be at least 8 characters long.")
-
+            
             # Check if email already exists
-            email = form.cleaned_data['email']
             if User.objects.filter(email=email).exists():
                 form.add_error('email', "This email is already registered.")
-
+            
             # If there are any form errors, return to the registration page with error messages
             if form.errors:
+                print("Form errors:", form.errors)  # Print form errors to console
                 messages.error(request, "Please correct the errors below.")
                 return render(request, 'users/register.html', {'form': form})
             
@@ -78,12 +82,9 @@ def register(request):
             user.save()
 
             # Ensure UserProfile is created or updated
-            full_name = form.cleaned_data.get('full_name')
-            phone_number = form.cleaned_data.get('phone_number')
-
             profile, created = UserProfile.objects.get_or_create(user=user)
             if not created:
-                profile.full_name = full_name
+                profile.full_name = form.cleaned_data.get('full_name')
                 profile.phone_number = phone_number
                 profile.save()
 
@@ -109,6 +110,7 @@ def register(request):
 
         else:
             messages.error(request, "Please correct the errors below.")
+            print("Form errors:", form.errors)  # Print form errors to console for debugging
             return render(request, 'users/register.html', {'form': form})
 
     else:

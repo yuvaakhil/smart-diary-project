@@ -3,7 +3,9 @@ from .models import UserProfile
 
 class UserProfileAdmin(admin.ModelAdmin):
     # Display the fields from the User model and UserProfile in the list
-    list_display = ('user', 'full_name', 'phone_number', 'get_username', 'get_email')
+    list_display = (
+        'user', 'full_name', 'phone_number', 'height', 'weight', 'age', 'gender', 'bmi', 'get_username', 'get_email'
+    )
 
     # Define methods to get the username and email from the related User model
     def get_username(self, obj):
@@ -15,7 +17,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     # Define the fields to display in the form when editing a user profile
     fieldsets = (
         (None, {
-            'fields': ('user', 'full_name', 'phone_number')
+            'fields': ('user', 'full_name', 'phone_number', 'height', 'weight', 'age', 'gender', 'bmi')
         }),
     )
 
@@ -23,5 +25,5 @@ class UserProfileAdmin(admin.ModelAdmin):
     get_username.admin_order_field = 'user__username'  # Allows ordering by username
     get_email.admin_order_field = 'user__email'  # Allows ordering by email
 
-# Register the UserProfile admin
+# Register the UserProfile admin (only once)
 admin.site.register(UserProfile, UserProfileAdmin)

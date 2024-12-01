@@ -31,18 +31,22 @@
             <div class="profile-grid">
                 <div class="profile-item">
                     <p>Height</p>
-                    
+                    <p>{{ user_profile.height|default:"Not Available" }} Cm</p>
+                </p>
                 </div>
                 <div class="profile-item">
                     <p>Weight</p>
+                    <p>{% if user_profile.weight %}{{ user_profile.weight }}{% else %}Not Available{% endif %} Kg</p>
+
                     
                 </div>
                 <div class="profile-item">
                     <p>Age</p>
-                   
+                    <p>{{ user_profile.age|default:"Not Available" }}</p>
                 </div>
                 <div class="profile-item">
                     <p>BMI</p>
+                    <p>{{ user_profile.bmi|default:"Not Available" }}</p>
                     
                 </div>
             </div>

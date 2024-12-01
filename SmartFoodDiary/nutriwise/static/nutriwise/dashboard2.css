@@ -115,3 +115,19 @@ body {
     margin-top: 10px;
     font-weight: 100;
   }
+  .messages .alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+  
+  .messages .alert.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .messages .alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
