@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load custom_filters %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Analyze Food Image</title>
+    <link rel="stylesheet" href="{% static 'nutriwise/upload_image.css' %}">
+    
+</head>
+<body>
+
+    <h1>Upload and Analyze Food Image</h1>
+
+    <div class="form-container">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-container">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <!-- Loop through the form fields -->
+                    {% for field in form %}
+                        <div class="form-field">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                        <br>
+                        <!-- Suppress specific field errors -->
+                        {% if field.errors %}
+                            <!-- Do nothing to suppress the errors -->
+                        {% endif %}
+                    {% endfor %}
+            
+                    <!-- Suppress non-field errors -->
+                    {% if form.non_field_errors %}
+                        <!-- Do nothing to suppress non-field errors -->
+                    {% endif %}
+                    
+                    <button type="submit">Upload Image</button>
+                </form>
+            </div>
+            
+
+            
+        </form>
+    </div>
+
+    <!--{% if food_details and food_details.name != 'Unknown' %}-->
+    <div class="analysis-result">
+        <h3>Food Analysis Result</h3>
+        <ul>
+            {% load custom_filters %}
+            <li><strong>Name:</strong> {{ food_details.name|replace_underscore:" " }}</li>
+            <li><strong>Confidence:</strong> {{ food_details.confidence|default:"N/A" }}</li>
+            <li><strong>Carbs:</strong> {{ food_details.carbs|default:"N/A" }} </li>
+            <li><strong>Fats:</strong> {{ food_details.fats|default:"N/A" }} </li>
+            <li><strong>Fiber:</strong> {{ food_details.fiber|default:"N/A" }} </li>
+            <li><strong>Sugar:</strong> {{ food_details.sugar|default:"N/A" }} </li>
+            <li><strong>Calories:</strong> {{ food_details.calories|default:"N/A" }} </li>
+            <li><strong>Proteins:</strong> {{ food_details.protein|default:"N/A" }} </li>
+            <li><strong>Sodium:</strong> {{ food_details.sodium|default:"N/A" }} </li>
+            <li><strong>Potassium:</strong> {{ food_details.potassium|default:"N/A" }} </li>
+            <li><strong>Cholesterol:</strong> {{ food_details.cholesterol|default:"N/A" }} </li>
+        </ul>
+    </div>
+    
+
+    
+    </div>
+    {% else %}
+    <div class="analysis-result">
+        <h3>No Analysis Data Available</h3>
+        <p>Please upload a valid image to receive food analysis details.</p>
+    </div>
+    {% endif %}
+
+</body>
+</html>

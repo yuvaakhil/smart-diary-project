@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Page</title>
-    <!-- Load static template tag -->
+    <title>home page</title>
+    <link rel="stylesheet" href="style1.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     {% load static %}
     <!-- Link to the static CSS file -->
     <link rel="stylesheet" type="text/css" href="{% static 'users/home.css' %}">
@@ -17,16 +19,17 @@
           
         </div>
         <div class="content">
-            <h1>Hello!! Welcome to NutriWise</h1>
+            <h>Hello! Welcome to NutriWise</h>
+            <p>NutriWise: Your Smart Food Companion for Effortless Nutrition Tracking<br>"Snap, Log, and Transform Your Meals into Healthier Choices!"</p>
             <div>
                 <!-- Buttons linking to login and register pages -->
               <a href="{% url 'users:login' %}">
-    <button type="button">
+    <button type="button"><span></span>
         LOG IN
     </button>
 </a>
 <a href="{% url 'users:register' %}">
-    <button type="button">
+    <button type="button"><span></span>
         REGISTER
     </button>
 </a>
@@ -34,30 +37,49 @@
             </div>
         </div>
     </div>
-    <footer>
-        <div class="footer-content">
-            <div class="contact-info">
-                <h3>Contact Us</h3>
-                <p>Email: <a href="mailto:nutriwise@gmail.com">nutriwise@gmail.com</a></p>
-                <p>Phone: +1 (123) 456-7890</p>
-                <p>Address: 123 Nutriwise Street, Food City, ABC 12345</p>
+    <footer class="footer">
+        <div class="contaiiner grid-four-column">
+            <div class="f-about">
+                <h1>About</h1>
+                <p>At NutriWise, we're passionate about empowering healthier lifestyles through technology.<br> Our mission is to simplify nutrition tracking and help you make informed food choices effortlessly.</p>
             </div>
-    
-            <div class="social-media">
-                <h3>Follow Us</h3>
-                <a href="facebook.jpg" target="_blank" class="social-icon">Facebook</a>
-                <a href="twitter.jpg" target="_blank" class="social-icon">Twitter</a>
-                <a href="insta.jpg" target="_blank" class="social-icon">Instagram</a>
-                <a href="linkedin.jpg" target="_blank" class="social-icon">LinkedIn</a>
+            <div class="f-links">
+                <h2>Links</h2>
+                <ul>
+                    <li><a href="#">Support</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Feedback</a></li>
+                </ul>
             </div>
-    
-            <div class="newsletter">
-                <h3>Subscribe to Our Newsletter</h3>
+            <div class="f-services">
+                <h3>Services</h3>
+                <ul>
+                    <li><a href="#">Food Recognition</a></li>
+                    <li><a href="#">Nutritional Analysis</a></li>
+                    <li><a href="#">Meal Logging</a></li>
+                    <li><a href="#">Calorie Tracking</a></li>
+                    <li><a href="#">Goal Setting</a></li>
+                </ul>
+            </div>
+            <div class="f-address">
+                <h4>Have Questions?</h4>
+                <address>
+                    <p><ion-icon name="location-outline"></ion-icon> Pune, India</p>
+                    <p><ion-icon name="call-outline"></ion-icon> <a href="tel:+919654548227">+91 9654548229</a></p>
+                    <p><ion-icon name="mail-outline"></ion-icon> <a href="mailto:nutriwise756@gmail.com">nutriwise756@gmail.com</a></p>
+                </address>
             </div>
         </div>
-    
-        <div class="footer-bottom">
-            <p>&copy; 2024 NutriWise. All Rights Reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        <div class="f-social-icons">
+            <ion-icon name="logo-instagram"></ion-icon>
+            <ion-icon name="logo-youtube"></ion-icon>
+            <ion-icon name="logo-twitter"></ion-icon>
+            <ion-icon name="logo-facebook"></ion-icon>
+        </div>
+        <div class="f-credits">
+            <p>© 2024 NutriWise. All rights reserved.</p>
         </div>
     </footer>
     

@@ -1,7 +1,23 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from users.models import UserProfile
+from .models import UserProfile, FoodDiaryEntry
+from .forms import FoodDiaryEntryForm
+from .forms import UserProfileForm
+from PIL import Image
+import torch
+from transformers import AutoImageProcessor, AutoModelForImageClassification
+import pandas as pd
+
+
+# Load the Excel sheet data into a DataFrame
+EXCEL_PATH = 'Anuvaad_INDB_2024.11.xlsx'
+nutrition_df = pd.read_excel(EXCEL_PATH)
+nutrition_df['food_name'] = nutrition_df['food_name'].str.lower()
+
+# Initialize model and processor for food image classification
+processor = AutoImageProcessor.from_pretrained("dima806/indian_food_image_detection")
+model = AutoModelForImageClassification.from_pretrained("dima806/indian_food_image_detection")
 
 @login_required
 def dashboard(request):
@@ -10,36 +26,87 @@ def dashboard(request):
     The user must be logged in to access.
     """
     user_profile = UserProfile.objects.filter(user=request.user).first()
+    uploaded_images = FoodDiaryEntry.objects.filter(user=request.user)
     context = {
         'user': request.user,
-        'user_profile': user_profile,  # Pass profile data to the template
+        'user_profile': user_profile,
+        'uploaded_images': uploaded_images,  
     }
     return render(request, 'nutriwise/dashboard.html', context)
 
 @login_required
 def dashboard2(request):
     """
-    Render an alternative dashboard.
-    The user must be logged in to access.
+    A separate dashboard view for specific use cases.
     """
     user_profile = UserProfile.objects.filter(user=request.user).first()
     context = {
         'user': request.user,
-        'user_profile': user_profile,  # Pass profile data to the template
+        'user_profile': user_profile,
     }
-    return render(request, 'nutriwise/dashboard2.html', context)
+    return render(request, 'nutriwise/dashboard2.html', {'user': request.user})
+
+@login_required
+def analyze_food_image(request):
+    """Handles food image upload and nutritional analysis."""
+    food_details = {}
+    if request.method == 'POST' and request.FILES.get('image'):
+        image_file = request.FILES['image']
+        try:
+            food_details = classify_and_get_nutrition(image_file)
+        except ValueError as e:
+            messages.error(request, str(e))
+
+    return render(request, 'food_analysis/upload_image.html', {
+        'food_details': food_details,
+    })
+
+
+@login_required
+def upload_image(request):
+    """Handles food image upload and logs the entry."""
+    form = FoodDiaryEntryForm(request.POST or None, request.FILES or None)
+    food_details = {}
+
+    if request.method == 'POST' and request.FILES.get('image'):
+        image_file = request.FILES['image']
+
+        # Check if the uploaded file is an image
+        try:
+            image = Image.open(image_file)  # Try to open the file as an image
+            image.verify()  # Verify that it is indeed an image
+        except (IOError, SyntaxError):
+            # If the file is not a valid image, show an error message
+            messages.error(request, "The file you uploaded is not a valid image. Please upload a valid image file.")
+            return render(request, 'nutriwise/upload_image.html', {'form': form})
+
+        try:
+            # Call the function to classify and get nutrition details
+            food_details = classify_and_get_nutrition(image_file)
+            messages.success(request, f"Predicted Food: {food_details['name']}, Confidence: {food_details['confidence']}")
+        except ValueError as e:
+            messages.error(request, "Error processing the image. Please try again with a valid image.")
+        except Exception as e:
+            messages.error(request, f"An unexpected error occurred: {str(e)}")
+
+    context = {
+        'form': form,
+        'food_details': food_details,
+    }
+    return render(request, 'nutriwise/upload_image.html', context)
+    
+
+
 
 @login_required
 def update_profile(request):
     """
     Update the user's profile information.
     """
-    # Get or create the user's profile
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     if request.method == "POST":
         try:
-            # Update profile fields with data from the form
             user_profile.age = int(request.POST.get('age', 0))
             user_profile.gender = request.POST.get('gender', '').capitalize()
             user_profile.height = float(request.POST.get('height', 0.0))
@@ -49,27 +116,104 @@ def update_profile(request):
                 if user_profile.height > 0 else 0
             )  # Automatically calculate BMI
 
-            # Save the updated profile
             user_profile.save()
             messages.success(request, "Profile updated successfully!")
         except ValueError:
             messages.error(request, "Invalid input. Please check your data.")
 
-        # Redirect to the dashboard or profile view
         return redirect('nutriwise:dashboard2')
 
-    # Render the profile update form
     context = {'user_profile': user_profile}
     return render(request, 'nutriwise/profile_update.html', context)
 
 @login_required
-def profile_view(request):
+def profile(request):
     """
-    Display the user's profile information.
+    Render and handle user profile updates.
     """
-    user_profile = UserProfile.objects.filter(user=request.user).first()
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
-    return render(request, 'nutriwise/profile.html', {
-        'user': request.user,
-        'user_profile': user_profile,  # Pass profile data to the template
-    })
+    if request.method == 'POST':
+        try:
+            user_profile.age = request.POST.get('age') or None
+            user_profile.gender = request.POST.get('gender') or None
+            user_profile.height = request.POST.get('height') or None
+            user_profile.weight = request.POST.get('weight') or None
+            user_profile.save()
+
+            messages.success(request, "Profile updated successfully!")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+        return redirect('nutriwise:profile')
+
+    return render(request, 'nutriwise/dashboard2.html', {'profile': user_profile})
+
+
+def classify_and_get_nutrition(image_file):
+    """
+    Handles image classification and retrieves nutritional data from the Excel sheet.
+    """
+    try:
+        # Load and preprocess the image
+        image = Image.open(image_file)
+        inputs = processor(images=image, return_tensors="pt")
+
+        # Perform inference
+        with torch.no_grad():
+            outputs = model(**inputs)
+
+        # Get predicted class labels
+        predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+        predicted_class = predictions.argmax(dim=-1).item()
+        confidence = predictions[0, predicted_class].item()
+
+        # Get label mapping and predicted class
+        id2label = model.config.id2label
+        predicted_label = id2label[predicted_class]
+
+        # Normalize and match the food name in the Excel data
+        formatted_label = predicted_label.replace("_", " ").strip().lower()
+        nutrition_df['normalized_food_name'] = nutrition_df['food_name'].str.strip().str.lower()
+
+        # Debug: Print the matching process
+        print(f"Formatted label: {formatted_label}")
+        print(f"Available food names: {nutrition_df['normalized_food_name'].tolist()}")
+
+        matched_food = nutrition_df[nutrition_df['normalized_food_name'] == formatted_label]
+
+        if matched_food.empty:
+            print(f"No match found for: {formatted_label}")
+            return {
+                'name': formatted_label,
+                'confidence': f"{confidence:.2%}",
+                'calories': 'N/A kcal',
+                'carbs': 'N/A g',
+                'fats': 'N/A g',
+                'fiber': 'N/A g',
+                'sugar': 'N/A g',
+                'protein': 'N/A g',
+                'sodium': 'N/A mg',
+                'potassium': 'N/A mg',
+                'cholesterol': 'N/A mg',
+            }
+
+        # Extract the first match
+        nutrition_info = matched_food.iloc[0]
+
+        # Return nutritional details
+        return {
+            'name': nutrition_info['food_name'],
+            'confidence': f"{confidence * 100:.2f}%",  # Convert to percentage with 2 decimals
+            'calories': f"{nutrition_info['energy_kcal']:.2f} kcal",
+            'carbs': f"{nutrition_info['carb_g']:.2f} g",
+            'fats': f"{nutrition_info['fat_g']:.2f} g",
+            'fiber': f"{nutrition_info['fibre_g']:.2f} g",
+            'sugar': f"{nutrition_info['freesugar_g']:.2f} g",
+            'protein': f"{nutrition_info['protein_g']:.2f} g",
+            'sodium': f"{nutrition_info['sodium_mg']:.2f} mg",
+            'potassium': f"{nutrition_info['potassium_mg']:.2f} mg",
+            'cholesterol': f"{nutrition_info['cholesterol_mg']:.2f} mg",
+        }
+
+    except Exception as e:
+        raise ValueError("try again")
