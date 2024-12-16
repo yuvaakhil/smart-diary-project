@@ -10,40 +10,19 @@
     
 </head>
 <body>
-
+    
     <h1>Upload and Analyze Food Image</h1>
-
+    <div>
+        <a  href="http://127.0.0.1:8000/nutriwise/" class="nutriwise-button">Go to Nutriwise</a>
+    </div>
+    
     <div class="form-container">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-container">
-                <form method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <!-- Loop through the form fields -->
-                    {% for field in form %}
-                        <div class="form-field">
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                        </div>
-                        <br>
-                        <!-- Suppress specific field errors -->
-                        {% if field.errors %}
-                            <!-- Do nothing to suppress the errors -->
-                        {% endif %}
-                    {% endfor %}
+            <label for="food_image">Upload Food Image:</label>
+    <input type="file" id="food_image" name="food_image" required>
             
-                    <!-- Suppress non-field errors -->
-                    {% if form.non_field_errors %}
-                        <!-- Do nothing to suppress non-field errors -->
-                    {% endif %}
-                    
-                    <button type="submit">Upload Image</button>
-                </form>
-            </div>
-            
-
-            
+            <button type="submit">Upload Image</button>
         </form>
     </div>
 
@@ -67,7 +46,7 @@
     </div>
     
 
-    
+   
     </div>
     {% else %}
     <div class="analysis-result">

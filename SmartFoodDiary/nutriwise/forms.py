@@ -1,11 +1,13 @@
 from django import forms
 from .models import FoodDiaryEntry
 
+from django import forms
+from .models import FoodDiaryEntry
+
 class FoodDiaryEntryForm(forms.ModelForm):
     class Meta:
         model = FoodDiaryEntry
-        fields = ['title', 'image', ]
-
+        fields = ['food_name', 'food_image', 'calories', 'carbs', 'fats', 'fiber', 'sugar', 'protein', 'sodium', 'potassium', 'cholesterol']
 from .models import UserProfile
 
 class UserProfileForm(forms.ModelForm):

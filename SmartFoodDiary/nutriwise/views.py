@@ -65,36 +65,48 @@ def analyze_food_image(request):
 @login_required
 def upload_image(request):
     """Handles food image upload and logs the entry."""
-    form = FoodDiaryEntryForm(request.POST or None, request.FILES or None)
     food_details = {}
 
-    if request.method == 'POST' and request.FILES.get('image'):
-        image_file = request.FILES['image']
-
-        # Check if the uploaded file is an image
-        try:
-            image = Image.open(image_file)  # Try to open the file as an image
-            image.verify()  # Verify that it is indeed an image
-        except (IOError, SyntaxError):
-            # If the file is not a valid image, show an error message
-            messages.error(request, "The file you uploaded is not a valid image. Please upload a valid image file.")
-            return render(request, 'nutriwise/upload_image.html', {'form': form})
+    if request.method == 'POST' and request.FILES.get('food_image'):
+        image_file = request.FILES['food_image']
 
         try:
-            # Call the function to classify and get nutrition details
+            # Directly call the function to classify and get nutrition details
             food_details = classify_and_get_nutrition(image_file)
-            messages.success(request, f"Predicted Food: {food_details['name']}, Confidence: {food_details['confidence']}")
-        except ValueError as e:
-            messages.error(request, "Error processing the image. Please try again with a valid image.")
-        except Exception as e:
-            messages.error(request, f"An unexpected error occurred: {str(e)}")
 
-    context = {
-        'form': form,
-        'food_details': food_details,
-    }
-    return render(request, 'nutriwise/upload_image.html', context)
-    
+            # Log the food details to check the values
+            print("Food Details:", food_details)
+
+            # Check if classification returned valid results
+            if not food_details or 'name' not in food_details:
+                messages.error(request, "Failed to classify the food. Please try again.")
+                return render(request, 'nutriwise/upload_image.html', {'food_details': food_details})
+
+            # Save the entry directly into the database
+            FoodDiaryEntry.objects.create(
+                user=request.user,
+                food_name=food_details.get('name', 'Unknown Food'),
+                food_image=image_file,
+                calories=float(food_details.get('calories', '0').replace(' kcal', '').strip()),
+                carbs=float(food_details.get('carbs', '0').replace(' g', '').strip()),
+                fats=float(food_details.get('fats', '0').replace(' g', '').strip()),
+                fiber=float(food_details.get('fiber', '0').replace(' g', '').strip()),
+                sugar=float(food_details.get('sugar', '0').replace(' g', '').strip()),
+                protein=float(food_details.get('protein', '0').replace(' g', '').strip()),
+                sodium=float(food_details.get('sodium', '0').replace(' mg', '').strip()),
+                potassium=float(food_details.get('potassium', '0').replace(' mg', '').strip()),
+                cholesterol=float(food_details.get('cholesterol', '0').replace(' mg', '').strip()),
+            )
+
+            messages.success(request, f"Food '{food_details['name']}' has been logged successfully!")
+            return redirect('food_diary')  # Redirect to the food diary page
+
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+
+    return render(request, 'nutriwise/upload_image.html', {'food_details': food_details})
+
+
 
 
 
@@ -175,14 +187,9 @@ def classify_and_get_nutrition(image_file):
         formatted_label = predicted_label.replace("_", " ").strip().lower()
         nutrition_df['normalized_food_name'] = nutrition_df['food_name'].str.strip().str.lower()
 
-        # Debug: Print the matching process
-        print(f"Formatted label: {formatted_label}")
-        print(f"Available food names: {nutrition_df['normalized_food_name'].tolist()}")
-
         matched_food = nutrition_df[nutrition_df['normalized_food_name'] == formatted_label]
 
         if matched_food.empty:
-            print(f"No match found for: {formatted_label}")
             return {
                 'name': formatted_label,
                 'confidence': f"{confidence:.2%}",
@@ -200,7 +207,6 @@ def classify_and_get_nutrition(image_file):
         # Extract the first match
         nutrition_info = matched_food.iloc[0]
 
-        # Return nutritional details
         return {
             'name': nutrition_info['food_name'],
             'confidence': f"{confidence * 100:.2f}%",  # Convert to percentage with 2 decimals
@@ -216,4 +222,4 @@ def classify_and_get_nutrition(image_file):
         }
 
     except Exception as e:
-        raise ValueError("try again")
+        raise ValueError("An error occurred while processing the image. Please try again.")

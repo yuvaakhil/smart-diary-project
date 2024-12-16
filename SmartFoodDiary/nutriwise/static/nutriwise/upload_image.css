@@ -12,6 +12,36 @@ body {
     text-align: center;
     line-height: 1.6;
 }
+.nutriwise-button {
+    z-index: 100;  
+    position: fixed;
+    top: 100px;  /* Distance from the top */
+    left: 20px;  /* Distance from the left edge */
+    display: inline-block;
+    margin: 20px auto;
+    padding: 15px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.nutriwise-button:hover {
+    background-color: #e40707; /* Darker green */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nutriwise-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 
 /* Header Styling */
 h1 {
@@ -122,4 +152,5 @@ form button:active {
         opacity: 1;
         transform: translateY(0);
     }
+    
 }
