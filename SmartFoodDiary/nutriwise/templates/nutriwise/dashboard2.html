@@ -4,6 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Data Dashboard</title>
+  <style>
+    #chart-section {
+      background-color: #ecf0f1;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s ease;
+    }
+
+    #chart-section.active {
+      background-color: #ffffff;
+    }
+
+    /* Chart Container */
+    #chartCanvas {
+      background-color: #f7f9fb;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+</style>
 
   <!-- Load Static Files in Django -->
   {% load static %}
@@ -12,6 +33,7 @@
 
   <!-- Link to Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="container">
@@ -21,25 +43,25 @@
       
       <div class="nav-box">
         <nav class="nav-menu">
-          <a href="javascript:void(0);" class="nav-item active" onclick="showSection('dashboard')">
+          <a href="javascript:void(0);" class="nav-item" onclick="showSection('dashboard')">
             <i class="fas fa-home"></i> Home
           </a>
           <a href="javascript:void(0);" class="nav-item" onclick="showSection('profile')">
             <i class="fas fa-user-circle"></i> User Profile
           </a>
-          <a href="javascript:void(0);" class="nav-item">
-            <i class="fas fa-chart-bar"></i> Bar Chart
-          </a>
-          <a href="javascript:void(0);" class="nav-item">
-            <i class="fas fa-chart-line"></i> Line Graph
-          </a>
-          <a href="javascript:void(0);" class="nav-item">
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:pie_chart_data' %}', 'pie')">
             <i class="fas fa-chart-pie"></i> Pie Chart
           </a>
-          <a href="javascript:void(0);" class="nav-item">
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart( '{% url 'nutriwise:bar_chart_data' %}', 'bar', )">
+            <i class="fas fa-chart-bar"></i> Bar Chart
+          </a>
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:line_chart_data' %}', 'line')">
+            <i class="fas fa-chart-line"></i> Line Graph
+          </a>
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:donut_chart_data' %}', 'doughnut')">
             <i class="fas fa-circle-notch"></i> Donut Chart
           </a>
-          <a href="javascript:void(0);" class="nav-item">
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart( '{% url 'nutriwise:waterfall_chart_data' %}', 'bar')">
             <i class="fas fa-water"></i> Waterfall Chart
           </a>
           <a href="http://127.0.0.1:8000/nutriwise/" class="nav-item">
@@ -47,7 +69,7 @@
           </a>
           <a href="http://127.0.0.1:8000/" class="nav-item">
             <i class="fas fa-sign-out-alt"></i> Logout
-        </a>
+          </a>
         </nav>
       </div>
     </aside>
@@ -58,39 +80,101 @@
           <h2>Welcome to the Data Dashboard</h2>
           <h4>Select a chart type from the sidebar to view different visualizations.</h4>
       </div>
+  
+        <div id="profile-section" class="content-section">
+            <h1>User Profile</h1>
+            <form method="POST" action="{% url 'nutriwise:profile' %}" class="profile-form">
+              {% csrf_token %}
+              <label for="age">Age:</label>
+              <input type="number" name="age" id="age" value="{{ profile.age }}" required>
+  
+              <label for="gender">Gender:</label>
+              <select name="gender" id="gender" required>
+                <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+                <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+              </select>
+  
+              <label for="height">Height (cm):</label>
+              <input type="number" name="height" id="height" value="{{ profile.height }}" required>
+  
+              <label for="weight">Weight (kg):</label>
+              <input type="number" name="weight" id="weight" value="{{ profile.weight }}" required>
+  
+              <button type="submit">Save</button>
+            </form>
+        </div>
+        <div id="chart-section" class="content-section">
+          <h1>Chart Visualization</h1>
+          <canvas id="chartCanvas" width="400" height="400"></canvas>
+        </div>
+    </main>
+  </div>
+  <script>
+    let chartInstance = null;
+    function loadChart(dataUrl, chartType) {
+  showSection('chart'); // Show the chart section
+  const ctx = document.getElementById('chartCanvas').getContext('2d');
 
-      <div id="profile-section" class="content-section">
-          <h1>User Profile</h1>
-          <form method="POST" action="{% url 'nutriwise:profile' %}" class="profile-form">
-            {% csrf_token %}
-            <label for="age">Age:</label>
-        <input type="number" name="age" id="age" value="{{ profile.age }}" required>
+  // Destroy previous chart instance to avoid duplication
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
 
-        <label for="gender">Gender:</label>
-        <select name="gender" id="gender" required>
-            <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
-            <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
-        </select>
+  // Fetch data and render the chart
+  fetch(dataUrl)
+    .then(response => response.json())
+    .then(data => {
+      chartInstance = new Chart(ctx, {
+        type: chartType,
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: data.title || 'Chart Data',
+            data: data.values,
+            backgroundColor: chartType === 'line' ? 'transparent' : (data.colors || ['#36a2eb', '#ff6384', '#ffcd56', '#4bc0c0', '#9966ff']),
+            borderColor: chartType === 'line' ? '#000000' : '#ffffff', // Line border color set to black
+            borderWidth: chartType === 'line' ? 2 : 1 // Thicker border for line charts
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' },
+            title: { display: true, text: data.title || 'Chart' }
+          },
+          scales: chartType === 'line' ? {
+            x: { beginAtZero: true },
+            y: { beginAtZero: true }
+          } : {}
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error loading chart data:', error);
+      alert('Failed to load chart data. Please try again.');
+    });
+}
 
-        <label for="height">Height (cm):</label>
-        <input type="number" name="height" id="height" value="{{ profile.height }}" required>
-
-        <label for="weight">Weight (kg):</label>
-        <input type="number" name="weight" id="weight" value="{{ profile.weight }}" required>
-
-        <button type="submit">Save</button>
-        </form>
-      </div>
-  </main>
-</div>
-
+    
+    
+  </script>
 <!-- JavaScript to toggle sections -->
 <script>
   function showSection(sectionId) {
-      const sections = document.querySelectorAll('.content-section');
-      sections.forEach(section => section.classList.remove('active'));
-      document.getElementById(`${sectionId}-section`).classList.add('active');
-  }
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    // Show selected section
+    document.getElementById(`${sectionId}-section`).classList.add('active');
+
+    // Clear the chart if switching away from the chart section
+    if (sectionId !== 'chart' && chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null; // Reset the chart instance
+    }
+}
+
 </script>
 
 <style>

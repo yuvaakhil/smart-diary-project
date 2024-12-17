@@ -169,6 +169,7 @@ LOGGING = {
         'handlers': ['console'],
         'level': 'DEBUG',
     },
+    
 }
 
 LOGIN_URL = 'users:login'  # Redirect to login page if not authenticated

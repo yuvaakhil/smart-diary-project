@@ -1,3 +1,5 @@
+#views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -5,6 +7,7 @@ from .models import UserProfile, FoodDiaryEntry
 from .forms import FoodDiaryEntryForm
 from .forms import UserProfileForm
 from PIL import Image
+from django.http import JsonResponse
 import torch
 from transformers import AutoImageProcessor, AutoModelForImageClassification
 import pandas as pd
@@ -45,6 +48,130 @@ def dashboard2(request):
         'user_profile': user_profile,
     }
     return render(request, 'nutriwise/dashboard2.html', {'user': request.user})
+
+@login_required
+def pie_chart_data(request):
+    """Fetch data for Pie Chart (e.g., nutrition breakdown for the uploaded food)."""
+    # Get the most recent FoodDiaryEntry for the logged-in user
+    latest_entry = FoodDiaryEntry.objects.filter(user=request.user).last()
+    
+    if latest_entry:
+        # Use the nutrition information for the uploaded food
+        labels = ['Calories', 'Carbs', 'Fats', 'Fiber', 'Sugar', 'Protein', 'Sodium', 'Potassium', 'Cholesterol']
+        values = [
+            latest_entry.calories,
+            latest_entry.carbs,
+            latest_entry.fats,
+            latest_entry.fiber,
+            latest_entry.sugar,
+            latest_entry.protein,
+            latest_entry.sodium,
+            latest_entry.potassium,
+            latest_entry.cholesterol
+        ]
+    else:
+        labels = []
+        values = []
+    
+    return JsonResponse({'labels': labels, 'values': values})
+
+
+
+@login_required
+def bar_chart_data(request):
+    """Fetch data for Bar Chart (e.g., protein content of the uploaded food)."""
+    latest_entry = FoodDiaryEntry.objects.filter(user=request.user).last()
+    if latest_entry:
+        # Use the nutrition information for the uploaded food
+        labels = ['Calories', 'Carbs', 'Fats', 'Fiber', 'Sugar', 'Protein', 'Sodium', 'Potassium', 'Cholesterol']
+        values = [
+            latest_entry.calories,
+            latest_entry.carbs,
+            latest_entry.fats,
+            latest_entry.fiber,
+            latest_entry.sugar,
+            latest_entry.protein,
+            latest_entry.sodium,
+            latest_entry.potassium,
+            latest_entry.cholesterol
+        ]
+    else:
+        labels = []
+        values = []
+    
+    return JsonResponse({'labels': labels, 'values': values})
+
+
+@login_required
+def line_chart_data(request):
+    """Fetch data for Line Chart (e.g., calories intake for the uploaded food)."""
+    latest_entry = FoodDiaryEntry.objects.filter(user=request.user).last()
+    if latest_entry:
+        # Use the nutrition information for the uploaded food
+        labels = ['Calories', 'Carbs', 'Fats', 'Fiber', 'Sugar', 'Protein', 'Sodium', 'Potassium', 'Cholesterol']
+        values = [
+            latest_entry.calories,
+            latest_entry.carbs,
+            latest_entry.fats,
+            latest_entry.fiber,
+            latest_entry.sugar,
+            latest_entry.protein,
+            latest_entry.sodium,
+            latest_entry.potassium,
+            latest_entry.cholesterol
+        ]
+    else:
+        labels = []
+        values = []
+    
+    return JsonResponse({'labels': labels, 'values': values})
+
+@login_required
+def donut_chart_data(request):
+    """Fetch data for Donut Chart (e.g., carbs content of the uploaded food)."""
+    latest_entry = FoodDiaryEntry.objects.filter(user=request.user).last()
+    if latest_entry:
+        # Use the nutrition information for the uploaded food
+        labels = ['Calories', 'Carbs', 'Fats', 'Fiber', 'Sugar', 'Protein', 'Sodium', 'Potassium', 'Cholesterol']
+        values = [
+            latest_entry.calories,
+            latest_entry.carbs,
+            latest_entry.fats,
+            latest_entry.fiber,
+            latest_entry.sugar,
+            latest_entry.protein,
+            latest_entry.sodium,
+            latest_entry.potassium,
+            latest_entry.cholesterol
+        ]
+    else:
+        labels = []
+        values = []
+    
+    return JsonResponse({'labels': labels, 'values': values})
+
+@login_required
+def waterfall_chart_data(request):
+    latest_entry = FoodDiaryEntry.objects.filter(user=request.user).last()
+    if latest_entry:
+        # Use the nutrition information for the uploaded food
+        labels = ['Calories', 'Carbs', 'Fats', 'Fiber', 'Sugar', 'Protein', 'Sodium', 'Potassium', 'Cholesterol']
+        values = [
+            latest_entry.calories,
+            latest_entry.carbs,
+            latest_entry.fats,
+            latest_entry.fiber,
+            latest_entry.sugar,
+            latest_entry.protein,
+            latest_entry.sodium,
+            latest_entry.potassium,
+            latest_entry.cholesterol
+        ]
+    else:
+        labels = []
+        values = []
+    
+    return JsonResponse({'labels': labels, 'values': values})
 
 @login_required
 def analyze_food_image(request):

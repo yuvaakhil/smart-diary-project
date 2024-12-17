@@ -1,4 +1,4 @@
-# urls.py
+# nutriwise/urls.py
 from django.urls import path
 from . import views
 from .models import UserProfile
@@ -12,4 +12,10 @@ urlpatterns = [
     path('update_profile/', views.update_profile, name='update_profile'),
     path('upload_image/', views.upload_image, name='upload_image'),
     path('analyze-food/', views.analyze_food_image, name='analyze_food_image'),
-    path('profile/', views.profile, name='profile'),]
+    path('profile/', views.profile, name='profile'),
+    path('pie_chart_data/', views.pie_chart_data, name='pie_chart_data'),
+    path('bar_chart_data/', views.bar_chart_data, name='bar_chart_data'),
+    path('line_chart_data/', views.line_chart_data, name='line_chart_data'),
+    path('donut_chart_data/', views.donut_chart_data, name='donut_chart_data'),
+    path('waterfall_chart_data/', views.waterfall_chart_data, name='waterfall_chart_data'),
+    ]
