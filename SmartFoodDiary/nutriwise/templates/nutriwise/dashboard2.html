@@ -18,57 +18,61 @@
     }
 
     /* Chart Container */
-    #chartCanvas {
+    #chartContainer {
       background-color: #f7f9fb;
       border: 1px solid #ddd;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      width: 100%;
+      height: 500px; /* Ensures proper size for all charts */
     }
-</style>
+  </style>
 
   <!-- Load Static Files in Django -->
   {% load static %}
-  <!-- Link to your custom CSS file in the static directory -->
   <link rel="stylesheet" href="{% static 'nutriwise/Dashboard2.css' %}">
-
-  <!-- Link to Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.20.0.min.js"></script>
 </head>
 <body>
   <div class="container">
     <aside class="sidebar">
-      <!-- Dynamic User Information -->
-      <p class="user-info"><b><i>Signed in : {{ user.username }}</i></b> </p> <!-- Dynamically display the logged-in user's name -->
-      
+      <p class="user-info"><b><i>Signed in : {{ user.username }}</i></b></p>
       <div class="nav-box">
         <nav class="nav-menu">
           <a href="javascript:void(0);" class="nav-item" onclick="showSection('dashboard')">
             <i class="fas fa-home"></i> Home
           </a>
+          <a href="{% url 'nutriwise:upload_image' %}" class="nav-item ">
+           
+                <i class="fas fa-upload"></i>  Upload
+          
+        </a>
+        
           <a href="javascript:void(0);" class="nav-item" onclick="showSection('profile')">
             <i class="fas fa-user-circle"></i> User Profile
+          </a>
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:waterfall_chart_data' %}', 'waterfall')">
+            <i class="fas fa-water"></i> Waterfall Chart
           </a>
           <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:pie_chart_data' %}', 'pie')">
             <i class="fas fa-chart-pie"></i> Pie Chart
           </a>
-          <a href="javascript:void(0);" class="nav-item" onclick="loadChart( '{% url 'nutriwise:bar_chart_data' %}', 'bar', )">
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:bar_chart_data' %}', 'bar')">
             <i class="fas fa-chart-bar"></i> Bar Chart
           </a>
           <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:line_chart_data' %}', 'line')">
-            <i class="fas fa-chart-line"></i> Line Graph
+            <i class="fas fa-chart-line"></i> Line Chart
           </a>
-          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:donut_chart_data' %}', 'doughnut')">
-            <i class="fas fa-circle-notch"></i> Donut Chart
-          </a>
-          <a href="javascript:void(0);" class="nav-item" onclick="loadChart( '{% url 'nutriwise:waterfall_chart_data' %}', 'bar')">
-            <i class="fas fa-water"></i> Waterfall Chart
+          <a href="javascript:void(0);" class="nav-item" onclick="loadChart('{% url 'nutriwise:donut_chart_data' %}', 'donut')">
+            <i class="fas fa-chart-pie"></i> Donut Chart
           </a>
           <a href="http://127.0.0.1:8000/nutriwise/" class="nav-item">
             <i class="fas fa-arrow-right"></i> Go to Nutriwise
           </a>
           <a href="http://127.0.0.1:8000/" class="nav-item">
-            <i class="fas fa-sign-out-alt"></i> Logout
+            <i class="fas fa-sign-out-alt" ></i> <button style=" background-color: #D32F2F;" >Logout</button>
           </a>
         </nav>
       </div>
@@ -76,110 +80,164 @@
 
     <main class="dashboard">
       <div id="dashboard-section" class="content-section active">
-          <h1>Interactive Data Dashboard</h1>
-          <h2>Welcome to the Data Dashboard</h2>
-          <h4>Select a chart type from the sidebar to view different visualizations.</h4>
+        <h1>Interactive Data Dashboard</h1>
+        <h2>Welcome to the Data Dashboard</h2>
+        <h4>Select a chart type from the sidebar to view different visualizations.</h4>
       </div>
-  
-        <div id="profile-section" class="content-section">
-            <h1>User Profile</h1>
-            <form method="POST" action="{% url 'nutriwise:profile' %}" class="profile-form">
-              {% csrf_token %}
-              <label for="age">Age:</label>
-              <input type="number" name="age" id="age" value="{{ profile.age }}" required>
-  
-              <label for="gender">Gender:</label>
-              <select name="gender" id="gender" required>
+
+      <div id="profile-section" class="content-section">
+        <h1>User Profile</h1>
+        <form method="POST" action="{% url 'nutriwise:profile' %}" class="profile-form">
+            {% csrf_token %}
+            <b><label for="age">Age:</label></b>
+            <input type="number" name="age" id="age" value="{{ profile.age }}" required>
+    
+            <label for="gender">Gender:</label>
+            <select name="gender" id="gender" required>
                 <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
                 <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
-              </select>
-  
-              <label for="height">Height (cm):</label>
-              <input type="number" name="height" id="height" value="{{ profile.height }}" required>
-  
-              <label for="weight">Weight (kg):</label>
-              <input type="number" name="weight" id="weight" value="{{ profile.weight }}" required>
-  
-              <button type="submit">Save</button>
-            </form>
-        </div>
-        <div id="chart-section" class="content-section">
-          <h1>Chart Visualization</h1>
-          <canvas id="chartCanvas" width="400" height="400"></canvas>
-        </div>
+            </select>
+    
+            <label for="height">Height (cm):</label>
+            <input type="number" name="height" id="height" value="{{ profile.height }}" required>
+    
+            <label for="weight">Weight (kg):</label>
+            <input type="number" name="weight" id="weight" value="{{ profile.weight }}" required>
+    
+            <!-- New fields for goals -->
+            <label for="calorie_goal">Calorie Goal:</label>
+            <input type="number" name="calorie_goal" id="calorie_goal" value="{{ profile.calorie_goal }}" required>
+    
+            <label for="protein_goal">Protein Goal (grams):</label>
+            <input type="number" name="protein_goal" id="protein_goal" value="{{ profile.protein_goal }}" required>
+    
+            <label for="carbs_goal">Carbohydrate Goal (grams):</label>
+            <input type="number" name="carbs_goal" id="carbs_goal" value="{{ profile.carbs_goal }}" required>
+    
+            <label for="fats_goal">Fat Goal (grams):</label>
+            <input type="number" name="fats_goal" id="fats_goal" value="{{ profile.fats_goal }}" required>
+    
+            <div class="notification-settings">
+                <label for="enable_notifications">Enable Notifications:</label>
+                <input type="checkbox" name="enable_notifications" id="enable_notifications" {% if profile.enable_notifications %}checked{% endif %}>
+    
+                <label for="notify_on_exceed">Notify on Exceed:</label>
+                <input type="checkbox" name="notify_on_exceed" id="notify_on_exceed" {% if profile.notify_on_exceed %}checked{% endif %}>
+    
+                <label for="notify_on_deficit">Notify on Deficit:</label>
+                <input type="checkbox" name="notify_on_deficit" id="notify_on_deficit" {% if profile.notify_on_deficit %}checked{% endif %}>
+            </div>
+    
+            <!-- Diet preferences -->
+            <label for="diet_type">Diet Type:</label>
+            <select name="diet_type" id="diet_type">
+                <option value="None" {% if profile.diet_type == 'None' %}selected{% endif %}>None</option>
+                <option value="Vegetarian" {% if profile.diet_type == 'Vegetarian' %}selected{% endif %}>Vegetarian</option>
+                <option value="Vegan" {% if profile.diet_type == 'Vegan' %}selected{% endif %}>Vegan</option>
+                <option value="Keto" {% if profile.diet_type == 'Keto' %}selected{% endif %}>Keto</option>
+                <option value="Paleo" {% if profile.diet_type == 'Paleo' %}selected{% endif %}>Paleo</option>
+            </select>
+    
+            <label for="food_restrictions">Food Restrictions:</label>
+            <textarea name="food_restrictions" id="food_restrictions">{{ profile.food_restrictions }}</textarea>
+    
+            <button type="submit">Save</button>
+        </form>
+      </div>
+
+
+
+      <div id="chart-section" class="content-section">
+        <h1>Chart Visualization</h1>
+        <div id="chartContainer"></div>
+      </div>
     </main>
   </div>
+
   <script>
-    let chartInstance = null;
     function loadChart(dataUrl, chartType) {
-  showSection('chart'); // Show the chart section
-  const ctx = document.getElementById('chartCanvas').getContext('2d');
+      showSection('chart'); // Show the chart section
 
-  // Destroy previous chart instance to avoid duplication
-  if (chartInstance) {
-    chartInstance.destroy();
-  }
+      fetch(dataUrl)
+        .then(response => response.json())
+        .then(data => {
+          let layout = {
+            title: '',
+            margin: { t: 40 },
+            responsive: true,
+          };
 
-  // Fetch data and render the chart
-  fetch(dataUrl)
-    .then(response => response.json())
-    .then(data => {
-      chartInstance = new Chart(ctx, {
-        type: chartType,
-        data: {
-          labels: data.labels,
-          datasets: [{
-            label: data.title || 'Chart Data',
-            data: data.values,
-            backgroundColor: chartType === 'line' ? 'transparent' : (data.colors || ['#36a2eb', '#ff6384', '#ffcd56', '#4bc0c0', '#9966ff']),
-            borderColor: chartType === 'line' ? '#000000' : '#ffffff', // Line border color set to black
-            borderWidth: chartType === 'line' ? 2 : 1 // Thicker border for line charts
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'top' },
-            title: { display: true, text: data.title || 'Chart' }
-          },
-          scales: chartType === 'line' ? {
-            x: { beginAtZero: true },
-            y: { beginAtZero: true }
-          } : {}
-        }
-      });
-    })
-    .catch(error => {
-      console.error('Error loading chart data:', error);
-      alert('Failed to load chart data. Please try again.');
-    });
-}
+          let trace = {};
 
-    
-    
-  </script>
-<!-- JavaScript to toggle sections -->
-<script>
-  function showSection(sectionId) {
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.remove('active');
-    });
+          switch(chartType) {
+            case 'pie':
+              layout.title = 'Pie Chart';
+              trace = {
+                type: 'pie',
+                labels: data.labels,
+                values: data.values,
+                hole: 0.3,
+              };
+              break;
+            case 'bar':
+              layout.title = 'Bar Chart';
+              trace = {
+                type: 'bar',
+                x: data.labels,
+                y: data.values,
+              };
+              break;
+            case 'line':
+              layout.title = 'Line Chart';
+              trace = {
+                type: 'scatter',
+                x: data.labels,
+                y: data.values,
+                mode: 'lines+markers',
+              };
+              break;
+            case 'donut':
+              layout.title = 'Donut Chart';
+              trace = {
+                type: 'pie',
+                labels: data.labels,
+                values: data.values,
+                hole: 0.5,
+              };
+              break;
+            case 'waterfall':
+              layout.title = 'Waterfall Chart';
+              trace = {
+                type: 'waterfall',
+                x: data.labels,
+                y: data.values,
+                connector: { line: { color: 'rgba(63, 63, 63, 0.3)' } },
+              };
+              break;
+            default:
+              alert('Unsupported chart type!');
+              return;
+          }
 
-    // Show selected section
-    document.getElementById(`${sectionId}-section`).classList.add('active');
-
-    // Clear the chart if switching away from the chart section
-    if (sectionId !== 'chart' && chartInstance) {
-        chartInstance.destroy();
-        chartInstance = null; // Reset the chart instance
+          Plotly.newPlot('chartContainer', [trace], layout);
+        })
+        .catch(error => {
+          console.error('Error loading chart data:', error);
+          alert('Failed to load chart data. Please try again.');
+        });
     }
-}
 
-</script>
+    function showSection(sectionId) {
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.remove('active');
+      });
+      document.getElementById(`${sectionId}-section`).classList.add('active');
+    }
+  </script>
 
-<style>
-  .content-section { display: none; }
-  .content-section.active { display: block; }
-</style>
+  <style>
+    .content-section { display: none; }
+    .content-section.active { display: block; }
+  </style>
 </body>
 </html>

@@ -1,6 +1,7 @@
 {% load static %}
 
 {% block content %}
+<title>Dashboard</title>
 <div class="container">
     <!-- Top Section -->
     <div class="header-box">
@@ -19,9 +20,9 @@
         <!-- Buttons Section -->
         <div class="header-buttons">
             <button class="menu-button" id="menuButton">Menu</button>
-            <a href="{% url 'nutriwise:upload_image' %}" class="upload-link">
+           <!--- <a href="{% url 'nutriwise:upload_image' %}" class="upload-link">
                 <button class="upload-button">+ Upload</button>
-            </a>
+            </a>  -->
         </div>
     </div>
 
@@ -61,13 +62,53 @@
             <h2>Daily Goals</h2>
             <div class="goal-item">
                 <p>Calorie Goal</p>
+                {{ calorie_goal }} kcal
             </div>
+            <div class="goal-item">
+                <p>Protien Goal</p> 
+                {{ protein_goal }} g
+                
+            </div>
+            <div class="goal-item">
+                <p>Fats Goal</p>
+                {{ fats_goal }} g
+            </div>
+        </div>
+        <br>
+        <div class="notifications">
+            <h3>Recent Notifications</h3>
+            <ul>
+                {% for notification in notifications %}
+                    <li>{{ notification.message }} - {{ notification.created_at }}</li>
+                {% empty %}
+                    <li>No recent notifications</li>
+                {% endfor %}
+            </ul>
         </div>
         
     </div>
     
     
 </div>
+<div class="recent-images">
+    <h3>Recent Uploaded Foods</h3>
+    <div class="images-grid">
+        {% for entry in uploaded_images %}
+            <div class="image-card">
+                <img src="{{ entry.food_image.url }}" alt="{{ entry.food_name }}" class="food-image">
+                <div class="image-details">
+                    <p><strong>{{ entry.food_name }}</strong></p>
+                    <p>Calories: {{ entry.calories }} kcal</p>
+                    <p>Carbs: {{ entry.carbs }} g</p>
+                    <p>Protein: {{ entry.protein }} g</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No food entries available.</p>
+        {% endfor %}
+    </div>
+</div>
+
 
 
 
@@ -79,6 +120,7 @@
 {% endblock %}
 
 <style>
+   
     .images-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -86,19 +128,75 @@
     }
 
     .image-card {
-        border: 1px solid #ddd;
+        border: 1px solid hwb(0 87% 13%);
         border-radius: 8px;
         padding: 8px;
         text-align: center;
+        overflow: hidden; 
     }
 
     .food-image {
         max-width: 100%;
-        height: auto;
+        height: 200px;
         border-radius: 8px;
+        object-fit: cover;
     }
 
     .image-details {
         margin-top: 8px;
     }
+
+    /* Container */
+    .container {
+        background-color: #FFFEEE;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 1700px;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        height: 80vh;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        
+    }
+
+    /* Main Content Section */
+    .main-box {
+        display: flex;
+        justify-content: space-between;
+        gap: 50px;
+        flex-wrap: wrap;
+    }
+
+    /* Profile and Goals Section */
+    .profile-box, .goals-box {
+        background-color: #E9F8FD;
+        flex: 1;
+        border-radius: 10px;
+        padding: 40px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-box h2, .goals-box h2 {
+        color: black;
+        font-size: 23px;
+        margin-bottom: 20px;
+    }
+
+    .notifications {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .recent-images {
+        background-color: #FFFEEE; /* Match background color of main container */
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+    }
+
 </style>

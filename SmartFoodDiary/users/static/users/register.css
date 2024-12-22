@@ -15,6 +15,8 @@ body {
     align-items: center;
     padding: 10px;
     color: #fff; /* Default text color is white */
+    width: 80vw; /* 80% of the viewport width */
+    margin: 0 auto; /* Center the page horizontally */
 }
 .invalid {
     border: 1px solid red;

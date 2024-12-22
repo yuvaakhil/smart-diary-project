@@ -4,7 +4,8 @@ from .models import UserProfile
 class UserProfileAdmin(admin.ModelAdmin):
     # Display the fields from the User model and UserProfile in the list
     list_display = (
-        'user', 'full_name', 'phone_number', 'height', 'weight', 'age', 'gender', 'bmi', 'get_username', 'get_email'
+        'user', 'full_name', 'phone_number', 'height', 'weight', 'age', 'gender', 'bmi', 
+        'calorie_goal', 'diet_type', 'enable_notifications'
     )
 
     # Define methods to get the username and email from the related User model
@@ -13,6 +14,16 @@ class UserProfileAdmin(admin.ModelAdmin):
 
     def get_email(self, obj):
         return obj.user.email
+    
+    def calorie_goal(self, obj):
+        return obj.calorie_goal
+
+    def diet_type(self, obj):
+        return obj.diet_type
+
+    def enable_notifications(self, obj):
+        return obj.enable_notifications
+
 
     # Define the fields to display in the form when editing a user profile
     fieldsets = (

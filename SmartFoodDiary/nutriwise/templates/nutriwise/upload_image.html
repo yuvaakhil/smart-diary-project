@@ -31,7 +31,7 @@
         <h3>Food Analysis Result</h3>
         <ul>
             {% load custom_filters %}
-            <li><strong>Name:</strong> {{ food_details.name|replace_underscore:" " }}</li>
+            <li><strong>Name:</strong> {{ food_details.name|replace_underscore:" "|capfirst }}</li>
             <li><strong>Confidence:</strong> {{ food_details.confidence|default:"N/A" }}</li>
             <li><strong>Carbs:</strong> {{ food_details.carbs|default:"N/A" }} </li>
             <li><strong>Fats:</strong> {{ food_details.fats|default:"N/A" }} </li>
@@ -54,6 +54,18 @@
         <p>Please upload a valid image to receive food analysis details.</p>
     </div>
     {% endif %}
+    
+
+<script>
+    // Check if the message container exists and show the alert box
+    document.addEventListener("DOMContentLoaded", function() {
+        var messageContainer = document.getElementById('message-container');
+        if (messageContainer) {
+            alert(messageContainer.innerText);
+        }
+    });
+</script>
+
 
 </body>
 </html>

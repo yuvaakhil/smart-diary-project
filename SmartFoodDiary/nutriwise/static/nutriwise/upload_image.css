@@ -154,3 +154,18 @@ form button:active {
     }
     
 }
+#message-container {
+    display: none;
+}
+
+.alert {
+    padding: 15px;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #4CAF50;
+}

@@ -24,10 +24,11 @@ body {
     max-width: 1700px;
     margin: 0 auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    height: 80vh; 
+    height: 900h; /* Increased height slightly to accommodate new layout */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 30px; /* Added spacing between sections */
+    overflow-y: auto;
 }
 
 /* Header Section */
@@ -80,6 +81,12 @@ body {
 /* Main Content Section */
 .main-box {
     display: flex;
+    gap: 50px;
+}
+
+/* Profile and Goals Section */
+.top-sections {
+    display: flex;
     justify-content: space-between;
     gap: 50px;
 }
@@ -119,13 +126,42 @@ body {
 .profile-item p {
     margin: 5px 0;
 }
+
+/* Notifications Section */
+.notifications {
+    background-color: #E9F8FD; /* Match the profile and goals background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    color: black;
+}
+
+.notifications h3 {
+    margin-bottom: 15px;
+    font-size: 23px;
+    color: black;
+}
+
+.notifications ul {
+    list-style: none;
+}
+
+.notifications li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .menu-button {
     background-color: #D32F2F; /* Primary red */
     color: white;
-    font-size: 18px;
-    padding: 10px 20px;
+    font-size: 25px;
+    padding: 15px 30px;
     border: none;
-    border-radius: 5px;
+    border-radius: 10px;
     cursor: pointer;
 }
 
