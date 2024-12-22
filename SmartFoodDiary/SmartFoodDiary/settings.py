@@ -177,3 +177,8 @@ LOGIN_URL = 'users:login'  # Redirect to login page if not authenticated
 # This ensures the user is redirected to the login page after logout
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+import logging
+import requests
+
+# Suppress HTTP request logs
+logging.getLogger("requests.packages.urllib3").setLevel(logging.WARNING)

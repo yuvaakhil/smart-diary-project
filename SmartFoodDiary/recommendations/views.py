@@ -31,28 +31,28 @@ def check_and_notify(user_profile, request):
     # Check if goals are exceeded or unmet and send notifications
     if total_calories > user_profile.calorie_goal:
         subject = "Calorie Goal Exceeded"
-        body = f"Dear {user_profile.user.username},\n\nYou have exceeded your daily calorie goal of {user_profile.calorie_goal:.2f} calories. You have consumed {total_calories:.2f} calories today.\n\nBest regards,\nYour Diet Tracker"
+        body = f"Dear {user_profile.user.username},\n\nYou have exceeded your daily calorie goal of {user_profile.calorie_goal:.2f} calories. You have consumed {total_calories:.2f} calories today.\n\nBest regards,\nNutriwise"
         send_notification_email(user_profile.user, subject, body)
         create_notification(user_profile.user, body)
         messages.success(request, "Calorie goal exceeded! An email has been sent to your inbox.")
 
     if total_protein < user_profile.protein_goal:
         subject = "Protein Goal Not Met"
-        body = f"Dear {user_profile.user.username},\n\nYou have not met your daily protein goal of {user_profile.protein_goal:.2f} grams. You have consumed {total_protein:.2f} grams of protein today.\n\nBest regards,\nYour Diet Tracker"
+        body = f"Dear {user_profile.user.username},\n\nYou have not met your daily protein goal of {user_profile.protein_goal:.2f} grams. You have consumed {total_protein:.2f} grams of protein today.\n\nBest regards,\nNutriwise"
         send_notification_email(user_profile.user, subject, body)
         create_notification(user_profile.user, body)
         messages.success(request, "Protein goal not met! An email has been sent to your inbox.")
     
     if total_fats > user_profile.fats_goal:
         subject = "Fat Goal Exceeded"
-        body = f"Dear {user_profile.user.username},\n\nYou have exceeded your daily fat goal of {user_profile.fats_goal:.2f} grams. You have consumed {total_fats:.2f} grams of fats today.\n\nBest regards,\nYour Diet Tracker"
+        body = f"Dear {user_profile.user.username},\n\nYou have exceeded your daily fat goal of {user_profile.fats_goal:.2f} grams. You have consumed {total_fats:.2f} grams of fats today.\n\nBest regards,\nNutriwise"
         send_notification_email(user_profile.user, subject, body)
         create_notification(user_profile.user, body)
         messages.success(request, "Fat goal exceeded! An email has been sent to your inbox.")
     
     if total_carbs < user_profile.carbs_goal:
         subject = "Carbohydrate Goal Not Met"
-        body = f"Dear {user_profile.user.username},\n\nYou have not met your daily carbohydrate goal of {user_profile.carbs_goal:.2f} grams. You have consumed {total_carbs:.2f} grams of carbs today.\n\nBest regards,\nYour Diet Tracker"
+        body = f"Dear {user_profile.user.username},\n\nYou have not met your daily carbohydrate goal of {user_profile.carbs_goal:.2f} grams. You have consumed {total_carbs:.2f} grams of carbs today.\n\nBest regards,\nNutriwise"
         send_notification_email(user_profile.user, subject, body)
         create_notification(user_profile.user, body)
         messages.success(request, "Carbohydrate goal not met! An email has been sent to your inbox.")
