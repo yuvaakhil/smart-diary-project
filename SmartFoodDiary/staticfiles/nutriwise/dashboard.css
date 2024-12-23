@@ -1,0 +1,170 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles */
+body {
+    font-family: Century Schoolbook;
+    background-image: url('https://i.postimg.cc/KYxkY6rK/NW-bg.jpg');
+    background-size: cover; 
+    background-repeat: no-repeat; 
+    background-position: center;
+    color: black;
+    padding: 100px;
+}
+
+/* Container */
+.container {
+    background-color: #FFFEEE;
+    border-radius: 10px;
+    padding: 100px;
+    max-width: 1700px;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    height: 900h; /* Increased height slightly to accommodate new layout */
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Added spacing between sections */
+    overflow-y: auto;
+}
+
+/* Header Section */
+.header-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 2px solid #ddd;
+    margin-bottom: 20px;
+}
+
+/* Logo */
+.logo-welcome {
+    display: flex;
+    align-items: center;
+    gap: 10px; 
+}
+
+.logo {
+    height: 100px;
+    width: auto;  
+}
+
+.welcome-section h1 {
+    color: black;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.welcome-section p {
+    color: black;
+    font-size: 25px;
+}
+
+.upload-button {
+    background-color: #004991; 
+    color: white;
+    font-size: 18px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.upload-button:hover {
+    background-color: #00366B;
+}
+
+/* Main Content Section */
+.main-box {
+    display: flex;
+    gap: 50px;
+}
+
+/* Profile and Goals Section */
+.top-sections {
+    display: flex;
+    justify-content: space-between;
+    gap: 50px;
+}
+
+/* Profile Section */
+.profile-box, .goals-box {
+    background-color: #E9F8FD;
+    flex: 1;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-box h2, .goals-box h2 {
+    color: black;
+    font-size: 23px;
+    margin-bottom: 20px;
+}
+
+/* Profile Grid */
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.profile-item, .goal-item {
+    background-color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    color: black;
+}
+
+.profile-item p {
+    margin: 5px 0;
+}
+
+/* Notifications Section */
+.notifications {
+    background-color: #E9F8FD; /* Match the profile and goals background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    color: black;
+}
+
+.notifications h3 {
+    margin-bottom: 15px;
+    font-size: 23px;
+    color: black;
+}
+
+.notifications ul {
+    list-style: none;
+}
+
+.notifications li {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button {
+    background-color: #D32F2F; /* Primary red */
+    color: white;
+    font-size: 25px;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.menu-button:hover {
+    background-color: #B71C1C; /* Darker red for hover */
+}

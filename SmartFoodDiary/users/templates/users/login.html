@@ -3,7 +3,7 @@
 <head>
     <link rel="stylesheet" type="text/css" href="{% static 'users/login.css' %}">
 </head>
-
+<title>Login</title>
 <form method="post" action="{% url 'users:login' %}?next=/nutriwise/" class="form">
     {% if messages %}
     <div class="message-container">

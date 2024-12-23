@@ -1,0 +1,9 @@
+<h2>Meal Recommendations Based on Your Dietary Intake</h2>
+
+{% for meal in recommended_meals %}
+    <div>
+        <h3>{{ meal }}</h3> <!-- Displaying only the meal name -->
+    </div>
+{% empty %}
+    <p>No recommendations available.</p>
+{% endfor %}

@@ -11,4 +11,5 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),  # Allauth URLs for authentication
     path('', include('users.urls', namespace='users')),  # Default users URLs (e.g., login, signup)
     path('nutriwise/', include('nutriwise.urls')),  # Nutriwise app URLs (dashboard, etc.)
+    path('', include('recommendations.urls')) 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
