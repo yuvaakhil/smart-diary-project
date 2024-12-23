@@ -1,9 +1,64 @@
-<h2>Meal Recommendations Based on Your Dietary Intake</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Report</title>
+</head>
+<body>
+    <h1>Nutrition Report for {{ user.username }}</h1>
 
-{% for meal in recommended_meals %}
-    <div>
-        <h3>{{ meal }}</h3> <!-- Displaying only the meal name -->
-    </div>
-{% empty %}
-    <p>No recommendations available.</p>
-{% endfor %}
+    <h2>Food Entries</h2>
+    {% if food_entries %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Food Name</th>
+                    <th>Calories</th>
+                    <th>Carbs</th>
+                    <th>Fats</th>
+                    <th>Protein</th>
+                    <th>Fiber</th>
+                    <th>Sugar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in food_entries %}
+                <tr>
+                    <td>{{ entry.timestamp|date:"Y-m-d H:i" }}</td>
+                    <td>{{ entry.food_name }}</td>
+                    <td>{{ entry.calories }}</td>
+                    <td>{{ entry.carbs }}</td>
+                    <td>{{ entry.fats }}</td>
+                    <td>{{ entry.protein }}</td>
+                    <td>{{ entry.fiber }}</td>
+                    <td>{{ entry.sugar }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No food entries available.</p>
+    {% endif %}
+
+    <h2>Aggregated Data</h2>
+    <ul>
+        <li>Total Calories: {{ aggregated_data.total_calories }}</li>
+        <li>Total Carbs: {{ aggregated_data.total_carbs }}</li>
+        <li>Total Fats: {{ aggregated_data.total_fats }}</li>
+        <li>Total Protein: {{ aggregated_data.total_protein }}</li>
+        <li>Total Fiber: {{ aggregated_data.total_fiber }}</li>
+        <li>Total Sugar: {{ aggregated_data.total_sugar }}</li>
+    </ul>
+</body>
+<div class="report-buttons">
+  <a href="{% url 'generate_pdf_report' %}" class="btn btn-primary">
+      <i class="fas fa-file-pdf"></i> Download PDF Report
+  </a>
+  <a href="{% url 'export_csv' %}" class="btn btn-secondary">
+      <i class="fas fa-file-csv"></i> Export to CSV
+  </a>
+</div>
+
+</html>

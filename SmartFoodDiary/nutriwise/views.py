@@ -133,39 +133,40 @@ def upload_image(request):
     if request.method == 'POST' and request.FILES.get('food_image'):
         image_file = request.FILES['food_image']
 
-        
-        # Classify the image and get nutrition details
-        food_details = classify_and_get_nutrition(image_file)
+        try:
+            # Classify the image and get nutrition details
+            food_details = classify_and_get_nutrition(image_file)
 
-        # Validate the classification
-        if not food_details or 'name' not in food_details:
-            messages.error(request, "Failed to classify the food. Please try again.")
-            return render(request, 'nutriwise/upload_image.html', {'food_details': food_details})
+            # Validate the classification
+            if not food_details or 'name' not in food_details:
+                messages.error(request, "Failed to classify the food. Please try again.")
+                return render(request, 'nutriwise/upload_image.html', {'food_details': food_details})
 
-        # Save the food entry to the database
-        entry = FoodDiaryEntry.objects.create(
-            user=request.user,
-            food_name=food_details.get('name', 'Unknown Food'),
-            food_image=image_file,
-            calories=float(food_details.get('calories', '0').replace(' kcal', '').strip()),
-            carbs=float(food_details.get('carbs', '0').replace(' g', '').strip()),
-            fats=float(food_details.get('fats', '0').replace(' g', '').strip()),
-            fiber=float(food_details.get('fiber', '0').replace(' g', '').strip()),
-            sugar=float(food_details.get('sugar', '0').replace(' g', '').strip()),
-            protein=float(food_details.get('protein', '0').replace(' g', '').strip()),
-            sodium=float(food_details.get('sodium', '0').replace(' mg', '').strip()),
-            potassium=float(food_details.get('potassium', '0').replace(' mg', '').strip()),
-            cholesterol=float(food_details.get('cholesterol', '0').replace(' mg', '').strip()),
-        )
+            # Save the food entry to the database
+            entry = FoodDiaryEntry.objects.create(
+                user=request.user,
+                food_name=food_details.get('name', 'Unknown Food'),
+                food_image=image_file,
+                calories=float(food_details.get('calories', '0').replace(' kcal', '').strip()),
+                carbs=float(food_details.get('carbs', '0').replace(' g', '').strip()),
+                fats=float(food_details.get('fats', '0').replace(' g', '').strip()),
+                fiber=float(food_details.get('fiber', '0').replace(' g', '').strip()),
+                sugar=float(food_details.get('sugar', '0').replace(' g', '').strip()),
+                protein=float(food_details.get('protein', '0').replace(' g', '').strip()),
+                sodium=float(food_details.get('sodium', '0').replace(' mg', '').strip()),
+                potassium=float(food_details.get('potassium', '0').replace(' mg', '').strip()),
+                cholesterol=float(food_details.get('cholesterol', '0').replace(' mg', '').strip()),
+            )
 
-        # Check goals and notify the user
-        user_profile = UserProfile.objects.get(user=request.user)
-        check_and_notify(user_profile, request)
+            # Check goals and notify the user
+            user_profile = UserProfile.objects.get(user=request.user)
+            check_and_notify(user_profile, request)
 
-        messages.success(request, f"Food '{food_details['name']}' has been logged successfully!")
-        return redirect('food_diary')  # Redirect to the food diary page
+            messages.success(request, f"Food '{food_details['name']}' has been logged successfully!")
+            return redirect('food_diary')  # Redirect to the food diary page
 
-        
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
 
     return render(request, 'nutriwise/upload_image.html', {'food_details': food_details})
 

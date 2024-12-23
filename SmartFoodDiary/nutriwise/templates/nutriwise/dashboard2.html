@@ -41,8 +41,7 @@
       <p class="user-info"><b><i>Signed in : {{ user.username }}</i></b></p>
       <div class="nav-box">
         <nav class="nav-menu">
-          <a href="javascript:void(0);" class="nav-item" onclick="showSection('dashboard')">
-            <i class="fas fa-home"></i> Home
+          
           </a>
           <a href="{% url 'nutriwise:upload_image' %}" class="nav-item ">
            
@@ -50,6 +49,9 @@
           
         </a>
         
+        <a href="http://127.0.0.1:8000/statistics/" class="nav-item">
+          <i class="fas fa-info-circle"></i> View Statistics
+        </a>
           <a href="javascript:void(0);" class="nav-item" onclick="showSection('profile')">
             <i class="fas fa-user-circle"></i> User Profile
           </a>

@@ -1,0 +1,143 @@
+/* General Styles */
+body {
+    font-family: Franklin Gothic Demi;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+  }
+  
+  .background {
+    width: 100%;
+    height: 100%;
+    background-image: url("{% static 'recommendations/Gesunde Vegane Ernährung 2024_ Dein Ultimativer Guide.jpeg' %}");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .container {
+    width: 73%;
+    padding: 5px;
+    background-color: rgba(55,125,34, 0.3); 
+    border-radius: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(20px);
+  }
+  
+  .row {
+    display: flex;
+    justify-content: space-around;
+    margin: 40px;
+  }
+  
+  .box {
+    width: 40%;
+    padding: 10px;
+    background-color: #7BAD39;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 20px; 
+    text-align: center;
+    position: relative;
+  }
+  
+  h2 {
+    font-size: 30px; 
+    font-weight: bold;
+    color: black;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  
+  /* Inner Box */
+  .inner-box {
+    padding: 10px;
+    background-color: #FFF5B0;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 15px; 
+    margin:10px;
+  }
+  
+  .table {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .column {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /*Inner Boxes*/
+  .column.left {
+    border-right: 1px solid #ADADAD;
+    padding-right: 10px; 
+  }
+  
+  .column.right {
+    padding-left: 10px; 
+  }
+  
+  .column p {
+    font-family:Calibri;
+    font-size: 18px; 
+    margin: 10px;
+  }
+  
+  /* Meal Suggestions */
+  .meal-suggestions {
+    width: 90%;
+    height: 180px; 
+    margin:50px;
+    border-radius: 20px;
+    background-color: #FFF5B0;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  /* Export Options */
+  .export-options {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .export-options span {
+    margin-left:65px;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+  }
+  
+  .btn {
+    margin-left:60px;
+    margin-bottom:25px;
+    padding: 15px 50px;
+    font-size: 16px;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .btn:hover {
+    background-color: #0056b3;
+  }
+  

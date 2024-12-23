@@ -15,7 +15,12 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 import pandas as pd
-
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+import plotly.graph_objects as go
+from django.db.models import Sum
 
 
 now = timezone.now()
@@ -161,7 +166,7 @@ def meal_recommendations(request):
             
             # Get recommended meals using the KNN-based system
             recommended_meals = suggest_meals(profile, meal_features, meals)
-            print(recommended_meals)
+            
 
             return render(request, 'recommendations/statistics.html', {'recommended_meals': recommended_meals})
         else:
@@ -175,14 +180,14 @@ def meal_recommendations(request):
 
 
 
+
 import pandas as pd
 
 def load_meal_data_from_excel(file_path):
     # Load the Excel file
     df = pd.read_excel(file_path)
 
-    # Inspect the dataframe to understand the structure (you can adjust column names as needed)
-    print(df.head())  # Check the first few rows to understand the structure
+   
 
     # Assuming the necessary columns are present like 'food_name', 'energy_kcal', 'protein_g', 'carb_g', 'fat_g'
     # Extract only the numeric columns for the model
@@ -201,3 +206,75 @@ def load_meal_data_from_excel(file_path):
 
     return meal_features, meals
 
+
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def generate_pdf_report(request):
+    """
+    Generate a PDF report with nutrient details without charts.
+    """
+    # Fetch user data
+    food_entries = FoodDiaryEntry.objects.filter(user=request.user).order_by('-timestamp')
+    aggregated_data = FoodDiaryEntry.objects.filter(user=request.user).aggregate(
+        total_calories=Sum('calories'),
+        total_carbs=Sum('carbs'),
+        total_fats=Sum('fats'),
+        total_fiber=Sum('fiber'),
+        total_sugar=Sum('sugar'),
+        total_protein=Sum('protein'),
+    )
+   
+
+    # Render the PDF template
+    template = get_template('recommendations/statistics.html')
+    html_content = template.render({
+    'user': request.user,
+    'food_entries': food_entries,
+    'aggregated_data': aggregated_data,
+})
+
+    # Generate PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="nutrition_report.pdf"'
+    pisa_status = pisa.CreatePDF(BytesIO(html_content.encode("UTF-8")), dest=response)
+    
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF <pre>' + html_content + '</pre>')
+
+    return response
+
+
+import csv
+
+@login_required
+def export_csv(request):
+    """
+    Export food and nutrient details to a CSV file.
+    """
+    # Fetch user data
+    food_entries = FoodDiaryEntry.objects.filter(user=request.user).order_by('-timestamp')
+
+    # Prepare response
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="food_data.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Food Name', 'Calories', 'Carbs', 'Fats', 'Protein', 'Meal Logged Time'])
+
+    for entry in food_entries:
+        writer.writerow([
+            entry.food_name,
+            entry.calories,
+            entry.carbs,
+            entry.fats,
+            entry.protein,
+            entry.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        ])
+
+    return response
