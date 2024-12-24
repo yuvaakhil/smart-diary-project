@@ -21,6 +21,10 @@ from django.template.loader import get_template
 from xhtml2pdf import pisa
 import plotly.graph_objects as go
 from django.db.models import Sum
+import os
+from io import BytesIO
+from django.http import HttpResponse
+
 
 
 now = timezone.now()
@@ -128,11 +132,18 @@ def prepare_data_for_recommendation(user_profile, meal_features, meals):
 
 
 def suggest_meals(user_profile, meal_features, meals):
+    """Suggest meals based on user profile and meal features."""
+    # Check if we have any meals to work with
+    if len(meals) == 0:
+        return []
+        
     # Prepare data for model
     user_features, _, _ = prepare_data_for_recommendation(user_profile, meal_features, meals)
     
     # Ensure there are enough meals to train the model
-    n_neighbors = min(5, len(meal_features))  # Use a maximum of 5 neighbors or the number of meals
+    n_neighbors = min(5, len(meals))  # Use a maximum of 5 neighbors or the number of meals
+    if n_neighbors < 1:
+        return []
     
     # Train a KNN model
     knn = NearestNeighbors(n_neighbors=n_neighbors)
@@ -154,26 +165,52 @@ def suggest_meals(user_profile, meal_features, meals):
 
 @login_required
 def meal_recommendations(request):
-    recommended_meals = [] 
     try:
-        # Load meal data from the Excel file
-        meal_features, meals = load_meal_data_from_excel("C:\\Users\\yuvaa\\Desktop\\smart diary\\SmartFoodDiary\\Anuvaad_INDB_2024.11.xlsx")
+        # Get user profile
+        profile = UserProfile.objects.get(user=request.user)
         
-        # Ensure the user is authenticated and has a profile
-        if request.user.is_authenticated:
-            # Get the user's profile
-            profile = UserProfile.objects.get(user=request.user)
-            
-            # Get recommended meals using the KNN-based system
-            recommended_meals = suggest_meals(profile, meal_features, meals)
-            
+        # Get food entries and aggregated data
+        food_entries = FoodDiaryEntry.objects.filter(user=request.user)
+        aggregated_data = food_entries.aggregate(
+            total_calories=Sum('calories'),
+            total_protein=Sum('protein'),
+            total_carbs=Sum('carbs'),
+            total_fats=Sum('fats'),
+        )
 
-            return render(request, 'recommendations/statistics.html', {'recommended_meals': recommended_meals})
-        else:
-            return HttpResponseForbidden("You need to log in to access this page.")
+        # Calculate totals
+        total_goals = (profile.calorie_goal + profile.protein_goal + 
+                      profile.carbs_goal + profile.fats_goal)
+        
+        total_consumed = (
+            (aggregated_data['total_calories'] or 0) +
+            (aggregated_data['total_protein'] or 0) +
+            (aggregated_data['total_carbs'] or 0) +
+            (aggregated_data['total_fats'] or 0)
+        )
+
+        # Get meal recommendations using a relative path
+        excel_file_path =excel_file_path = r"C:\Users\yuvaa\Desktop\smart diary\SmartFoodDiary\Anuvaad_INDB_2024.11.xlsx"
+
+        try:
+            meal_features, meals = load_meal_data_from_excel(excel_file_path)
+            recommended_meals = suggest_meals(profile, meal_features, meals)
+        except (PermissionError, FileNotFoundError) as e:
+            # Handle file access errors gracefully
+            recommended_meals = []
+            messages.error(request, f"Could not access meal recommendations data: {str(e)}")
+
+        context = {
+            'user_profile': profile,
+            'aggregated_data': aggregated_data,
+            'recommended_meals': recommended_meals,
+            'total_goals': total_goals,
+            'total_consumed': total_consumed,
+        }
+
+        return render(request, 'recommendations/statistics.html', context)
     
     except UserProfile.DoesNotExist:
-        # Handle the case where the user does not have a profile
         return HttpResponseForbidden("User profile not found. Please complete your profile.")
     
 
@@ -184,65 +221,89 @@ def meal_recommendations(request):
 import pandas as pd
 
 def load_meal_data_from_excel(file_path):
-    # Load the Excel file
-    df = pd.read_excel(file_path)
+    """Load meal data from Excel file with error handling."""
+    try:
+        # Load the Excel file
+        df = pd.read_excel(file_path)
 
-   
+        # Ensure required columns exist
+        required_columns = ['food_name', 'energy_kcal', 'protein_g', 'carb_g', 'fat_g']
+        missing_columns = [col for col in required_columns if col not in df.columns]
+        
+        if missing_columns:
+            raise ValueError(f"Missing required columns: {', '.join(missing_columns)}")
 
-    # Assuming the necessary columns are present like 'food_name', 'energy_kcal', 'protein_g', 'carb_g', 'fat_g'
-    # Extract only the numeric columns for the model
-    numeric_columns = ['energy_kcal', 'protein_g', 'carb_g', 'fat_g']
-    
-    # Check if all the required numeric columns are present
-    for col in numeric_columns:
-        if col not in df.columns:
-            raise ValueError(f"Missing required column: {col}")
-    
-    # Extract meal features (numeric data only)
-    meal_features = df[numeric_columns].values
+        # Extract meal features (numeric data only)
+        numeric_columns = ['energy_kcal', 'protein_g', 'carb_g', 'fat_g']
+        meal_features = df[numeric_columns].values
 
-    # Extract meal names (strings) for reference, but do not include them in the model
-    meals = df['food_name'].values
+        # Extract meal names
+        meals = df['food_name'].values
 
-    return meal_features, meals
+        return meal_features, meals
+
+    except Exception as e:
+        # Log the error (you should configure logging properly)
+        print(f"Error loading meal data: {str(e)}")
+        # Return empty data rather than raising an exception
+        return np.array([]), np.array([])
 
 
-from io import BytesIO
-from django.http import HttpResponse
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-from django.db.models import Sum
-from django.contrib.auth.decorators import login_required
+
 
 @login_required
 def generate_pdf_report(request):
     """
-    Generate a PDF report with nutrient details without charts.
+    Generate a PDF report with nutrient details.
     """
+    # Get user profile
+    profile = UserProfile.objects.get(user=request.user)
+    
     # Fetch user data
     food_entries = FoodDiaryEntry.objects.filter(user=request.user).order_by('-timestamp')
     aggregated_data = FoodDiaryEntry.objects.filter(user=request.user).aggregate(
         total_calories=Sum('calories'),
+        total_protein=Sum('protein'),
         total_carbs=Sum('carbs'),
         total_fats=Sum('fats'),
-        total_fiber=Sum('fiber'),
-        total_sugar=Sum('sugar'),
-        total_protein=Sum('protein'),
     )
-   
+
+    # Calculate totals
+    total_goals = (profile.calorie_goal + profile.protein_goal + 
+                  profile.carbs_goal + profile.fats_goal)
+    
+    total_consumed = (
+        (aggregated_data['total_calories'] or 0) +
+        (aggregated_data['total_protein'] or 0) +
+        (aggregated_data['total_carbs'] or 0) +
+        (aggregated_data['total_fats'] or 0)
+    )
+
+    # Prepare context
+    context = {
+        'user': request.user,
+        'user_profile': profile,
+        'food_entries': food_entries,
+        'aggregated_data': aggregated_data,
+        'total_goals': total_goals,
+        'total_consumed': total_consumed,
+    }
 
     # Render the PDF template
-    template = get_template('recommendations/statistics.html')
-    html_content = template.render({
-    'user': request.user,
-    'food_entries': food_entries,
-    'aggregated_data': aggregated_data,
-})
+    template = get_template('recommendations/pdf_template.html')  # Use the new template
+    html_content = template.render(context)
 
     # Generate PDF
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="nutrition_report.pdf"'
-    pisa_status = pisa.CreatePDF(BytesIO(html_content.encode("UTF-8")), dest=response)
+    
+    # Create PDF with proper encoding and options
+    pisa_status = pisa.CreatePDF(
+        BytesIO(html_content.encode("UTF-8")),
+        dest=response,
+        encoding='utf-8',
+        show_error_as_pdf=True
+    )
     
     if pisa_status.err:
         return HttpResponse('Error generating PDF <pre>' + html_content + '</pre>')
