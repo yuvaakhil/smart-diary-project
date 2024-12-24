@@ -190,7 +190,7 @@ def meal_recommendations(request):
         )
 
         # Get meal recommendations using a relative path
-        excel_file_path =excel_file_path = r"C:\Users\yuvaa\Desktop\smart diary\SmartFoodDiary\Anuvaad_INDB_2024.11.xlsx"
+        excel_file_path = "Anuvaad_INDB_2024.11.xlsx"
 
         try:
             meal_features, meals = load_meal_data_from_excel(excel_file_path)
