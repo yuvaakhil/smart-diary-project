@@ -9,7 +9,6 @@ from django.contrib import messages
 from django.utils import timezone
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
-from django.shortcuts import render
 from nutriwise.models import UserProfile
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required

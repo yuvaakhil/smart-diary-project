@@ -1,185 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistics</title>
-    <style>
-        /* General Styles */
-        body {
-            font-family: Franklin Gothic Demi;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f4f4f4;
-        }
+    <link rel="stylesheet" href="{% static 'recommendations/statistics.css' %}">i
 
-        .background {
-            width: 100%;
-            height: 100%;
-            background-image: url('https://i.postimg.cc/QtmQC6gj/Gesunde-Vegane-Ern-hrung-2024-Dein-Ultimativer-Guide.jpg');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .container {
-            width: 73%;
-            padding: 5px;
-            background-color: rgba(55,125,34, 0.3); 
-            border-radius: 30px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(20px);
-        }
-
-        .row {
-            display: flex;
-            justify-content: space-around;
-            margin: 40px;
-        }
-
-        .box {
-            width: 40%;
-            padding: 10px;
-            background-color: #7BAD39;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.5);
-            border-radius: 20px; 
-            text-align: center;
-            position: relative;
-        }
-
-        h2 {
-            font-size: 30px; 
-            font-weight: bold;
-            color: black;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        /* Inner Box */
-        .inner-box {
-            padding: 10px;
-            background-color: #FFF5B0;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
-            border-radius: 15px; 
-            margin:10px;
-        }
-
-        .table {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .column {
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .column.left {
-            border-right: 1px solid #ADADAD;
-            padding-right: 10px; 
-        }
-
-        .column.right {
-            padding-left: 10px; 
-        }
-
-        .column p {
-            font-family: Calibri;
-            font-size: 18px; 
-            margin: 10px;
-        }
-
-        /* Meal Suggestions */
-        .meal-suggestions {
-            width: 90%;
-            height: 180px; 
-            margin: 50px auto;
-            border-radius: 20px;
-            background-color: #FFF5B0;
-            box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 30px;
-            font-size: 20px;
-            font-weight: bold;
-            padding: 20px;
-        }
-
-        /* Export Options */
-        .export-options {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .export-options span {
-            margin-left: 65px;
-            font-size: 20px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .btn {
-            margin-left: 60px;
-            margin-bottom: 25px;
-            padding: 15px 50px;
-            font-size: 16px;
-            border: 1px solid #007bff;
-            background-color: #007bff;
-            color: #fff;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        .nutriwise-button {
-    z-index: 100;  
-    position: fixed;
-    top: 100px;  /* Distance from the top */
-    left: 20px;  /* Distance from the left edge */
-    display: inline-block;
-    margin: 20px auto;
-    padding: 25px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-    background-color: #4CAF50; /* Green */
-    border: none;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.nutriwise-button:hover {
-    background-color: #e40707; /* Darker green */
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-.nutriwise-button:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-    </style>
 </head>
 <body>
     <div>
@@ -236,33 +63,30 @@
             </div>
         </div>
         
-        <!-- Meal Suggestions Box -->
-        <div >
-            <h2 style="color: #f4f4f4;">Recommended Meals</h2 text-align= "left">
-        <div class="meal-suggestions">
-            
-       
-            
-            {% if recommended_meals %}
-                <ul style="list-style: none; padding: 0;">
-                    {% for meal in recommended_meals|slice:":5" %}
-                        {{ meal }}  ,
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No meal suggestions available</p>
-            {% endif %}
-        </div>
+       <!-- Meal Suggestions Box -->
+<div>
+    <h2 style="color: #f4f4f4; text-align: left; font-family: 'Poppins', sans-serif;">🍽️ Recommended Meals</h2>
+    <div class="meal-suggestions">
+      {% if recommended_meals %}
+        <ul class="meal-list">
+          {% for meal in recommended_meals|slice:":5" %}
+            <li>{{ meal }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="no-meal-message">No meal suggestions available</p>
+      {% endif %}
     </div>
+  </div>
+  
 
         <!-- Export Options -->
         <div class="export-options">
-            <span>Import Statistics as: </span>
-            <div style="display: flex">
-                <a href="{% url 'generate_pdf_report' %}" class="btn">PDF</a>
-                <a href="{% url 'export_csv' %}" class="btn">CSV</a>
-            </div>
-        </div>
+         <span class="export-label" style="color: whitesmoke;">Export Statistics as:</span>
+            <a href="{% url 'generate_pdf_report' %}" class="btn export-btn">PDF</a>
+            <a href="{% url 'export_csv' %}" class="btn export-btn">CSV</a>
+          </div>
+          
 
         <!-- Add this temporarily for debugging -->
         {% if debug %}

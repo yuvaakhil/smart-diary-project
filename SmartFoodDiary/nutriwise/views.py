@@ -12,6 +12,7 @@ from django.http import JsonResponse
 from recommendations.views import check_and_notify
 from django.db.models import Sum
 from recommendations.models import Notification
+from django.contrib.auth import logout
 
 
 # Load the Excel sheet data into a DataFrame
@@ -179,14 +180,29 @@ def update_profile(request):
 
     if request.method == "POST":
         try:
+            # Update the profile fields
             user_profile.age = int(request.POST.get('age', 0))
             user_profile.gender = request.POST.get('gender', '').capitalize()
             user_profile.height = float(request.POST.get('height', 0.0))
             user_profile.weight = float(request.POST.get('weight', 0.0))
+            user_profile.calorie_goal = int(request.POST.get('calorie_goal', 0))
+            user_profile.protein_goal = int(request.POST.get('protein_goal', 0))
+            user_profile.carbs_goal = int(request.POST.get('carbs_goal', 0))
+            user_profile.fats_goal = int(request.POST.get('fats_goal', 0))
+
+            # Notification settings
+            user_profile.enable_notifications = request.POST.get('enable_notifications') == 'on'
+            user_profile.notify_on_exceed = request.POST.get('notify_on_exceed') == 'on'
+            
+            # Diet type and food restrictions
+            user_profile.diet_type = request.POST.get('diet_type', 'None')
+            user_profile.food_restrictions = request.POST.get('food_restrictions', '')
+
+            # Automatically calculate BMI
             user_profile.bmi = (
                 user_profile.weight / ((user_profile.height / 100) ** 2)
                 if user_profile.height > 0 else 0
-            )  # Automatically calculate BMI
+            )
             
             user_profile.save()
             messages.success(request, "Profile updated successfully!")
@@ -195,8 +211,13 @@ def update_profile(request):
 
         return redirect('nutriwise:dashboard2')
 
-    context = {'user_profile': user_profile}
-    return render(request, 'nutriwise/profile_update.html', context)
+    context = {'profile': user_profile}
+    return render(request, 'nutriwise/dashboard2.html', context)
+
+def custom_logout(request):
+    logout(request)  # Log the user out
+    messages.success(request, "You have successfully logged out.")
+    return redirect("http://127.0.0.1:8000/login/") 
 
 @login_required
 def profile(request):

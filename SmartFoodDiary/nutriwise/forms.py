@@ -1,8 +1,6 @@
 from django import forms
 from .models import FoodDiaryEntry
 
-from django import forms
-from .models import FoodDiaryEntry
 
 class FoodDiaryEntryForm(forms.ModelForm):
     class Meta:
@@ -17,3 +15,4 @@ class UserProfileForm(forms.ModelForm):
 
 class ImageUploadForm(forms.Form):
     image = forms.ImageField()
+

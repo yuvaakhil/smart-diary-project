@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,57 +14,134 @@
     
     <h1>Upload and Analyze Food Image</h1>
     <div>
-        <a  href="http://127.0.0.1:8000/nutriwise/" class="nutriwise-button">Go to Nutriwise</a>
+        <a href="http://127.0.0.1:8000/nutriwise/" class="nutriwise-button">Go to Nutriwise</a>
     </div>
     
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <img src="{% static 'nutriwise/loader-2_food.gif' %}" alt="Loading..." class="loading-gif">
+        <div class="loading-text">Analyzing your delicious food...</div>
+    </div>
+
     <div class="form-container">
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
             {% csrf_token %}
             <label for="food_image">Upload Food Image:</label>
-    <input type="file" id="food_image" name="food_image" required>
-            
-            <button type="submit">Upload Image</button>
+            <input type="file" id="food_image" name="food_image" accept=".jpg,.jpeg,.png" required>
+            <div class="error-message" id="errorMessage"></div>
+            <p class="file-requirements">
+                Accepted formats: JPG, JPEG, PNG<br>
+                Maximum file size: 5MB
+            </p>
+            <button type="submit" id="submitBtn">Upload Image</button>
         </form>
     </div>
 
-    <!--{% if food_details and food_details.name != 'Unknown' %}-->
-    <div class="analysis-result">
-        <h3>Food Analysis Result</h3>
-        <ul>
-            {% load custom_filters %}
-            <li><strong>Name:</strong> {{ food_details.name|replace_underscore:" "|capfirst }}</li>
-            <li><strong>Confidence:</strong> {{ food_details.confidence|default:"N/A" }}</li>
-            <li><strong>Carbs:</strong> {{ food_details.carbs|default:"N/A" }} </li>
-            <li><strong>Fats:</strong> {{ food_details.fats|default:"N/A" }} </li>
-            <li><strong>Fiber:</strong> {{ food_details.fiber|default:"N/A" }} </li>
-            <li><strong>Sugar:</strong> {{ food_details.sugar|default:"N/A" }} </li>
-            <li><strong>Calories:</strong> {{ food_details.calories|default:"N/A" }} </li>
-            <li><strong>Proteins:</strong> {{ food_details.protein|default:"N/A" }} </li>
-            <li><strong>Sodium:</strong> {{ food_details.sodium|default:"N/A" }} </li>
-            <li><strong>Potassium:</strong> {{ food_details.potassium|default:"N/A" }} </li>
-            <li><strong>Cholesterol:</strong> {{ food_details.cholesterol|default:"N/A" }} </li>
-        </ul>
-    </div>
-    
-
-   
-    </div>
+    {% if food_details and food_details.name != 'Unknown' %}
+        <div class="analysis-result">
+            <h3>Food Analysis Result</h3>
+            <ul>
+                {% load custom_filters %}
+                <li><strong>Name:</strong> {{ food_details.name|replace_underscore:" "|capfirst }}</li>
+                <li><strong>Confidence:</strong> {{ food_details.confidence|default:"N/A" }}</li>
+                <li><strong>Carbs:</strong> {{ food_details.carbs|default:"N/A" }} </li>
+                <li><strong>Fats:</strong> {{ food_details.fats|default:"N/A" }} </li>
+                <li><strong>Fiber:</strong> {{ food_details.fiber|default:"N/A" }} </li>
+                <li><strong>Sugar:</strong> {{ food_details.sugar|default:"N/A" }} </li>
+                <li><strong>Calories:</strong> {{ food_details.calories|default:"N/A" }} </li>
+                <li><strong>Proteins:</strong> {{ food_details.protein|default:"N/A" }} </li>
+                <li><strong>Sodium:</strong> {{ food_details.sodium|default:"N/A" }} </li>
+                <li><strong>Potassium:</strong> {{ food_details.potassium|default:"N/A" }} </li>
+                <li><strong>Cholesterol:</strong> {{ food_details.cholesterol|default:"N/A" }} </li>
+            </ul>
+        </div>
     {% else %}
-    <div class="analysis-result">
-        <h3>No Analysis Data Available</h3>
-        <p>Please upload a valid image to receive food analysis details.</p>
-    </div>
+        <div class="analysis-result">
+            <h3>What’s on Your Plate?</h3>
+    <p>Share a photo of your meal, and we’ll serve up all the nutritional details!</p>
+        </div>
     {% endif %}
     
 
 <script>
-    // Check if the message container exists and show the alert box
-    document.addEventListener("DOMContentLoaded", function() {
-        var messageContainer = document.getElementById('message-container');
-        if (messageContainer) {
-            alert(messageContainer.innerText);
+    const form = document.getElementById('uploadForm');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    // Preload the loading GIF
+    const preloadImage = new Image();
+    preloadImage.src = "nutriwise\gif\loading.gif";
+
+    // Ensure loading overlay is hidden initially
+    loadingOverlay.style.display = 'none';
+
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const fileInput = document.getElementById('food_image');
+        const file = fileInput.files[0];
+        const maxSize = 5 * 1024 * 1024;
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+
+        errorMessage.style.display = 'none';
+        
+        if (!file) {
+            showError('Please select a file.');
+            return;
+        }
+
+        if (!allowedTypes.includes(file.type)) {
+            showError('Only JPG, JPEG, and PNG files are allowed.');
+            return;
+        }
+
+        if (file.size > maxSize) {
+            showError('File size must be less than 5MB.');
+            return;
+        }
+
+        try {
+            // Show loading overlay before form submission
+            loadingOverlay.style.display = 'flex';
+            
+            // Small delay to ensure the loading overlay is visible
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Submit the form
+            form.submit();
+        } catch (error) {
+            loadingOverlay.style.display = 'none';
+            showError('An error occurred while uploading. Please try again.');
         }
     });
+
+    // Remove the beforeunload event listener as it might interfere
+    // window.addEventListener('beforeunload', function() {
+    //     loadingOverlay.style.display = 'flex';
+    // });
+
+    // Make sure overlay is hidden when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        loadingOverlay.style.display = 'none';
+    });
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        errorMessage.style.animation = 'shake 0.5s ease-in-out';
+    }
+
+    // Add shake animation for error messages
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+    `;
+    document.head.appendChild(style);
 </script>
 
 

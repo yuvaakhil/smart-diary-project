@@ -1,7 +1,8 @@
 # nutriwise/urls.py
 from django.urls import path
 from . import views
-from .models import UserProfile
+from .views import custom_logout
+
 
 app_name = 'nutriwise'
 
@@ -18,5 +19,6 @@ urlpatterns = [
     path('line_chart_data/', views.line_chart_data, name='line_chart_data'),
     path('donut_chart_data/', views.donut_chart_data, name='donut_chart_data'),
     path('waterfall_chart_data/', views.waterfall_chart_data, name='waterfall_chart_data'),
+    path('logout/', custom_logout, name='custom_logout'),
     
     ]

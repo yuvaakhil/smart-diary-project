@@ -73,9 +73,11 @@
           <a href="http://127.0.0.1:8000/nutriwise/" class="nav-item">
             <i class="fas fa-arrow-right"></i> Go to Nutriwise
           </a>
-          <a href="http://127.0.0.1:8000/" class="nav-item">
-            <i class="fas fa-sign-out-alt" ></i> <button style=" background-color: #D32F2F;" >Logout</button>
-          </a>
+          <a href="{% url 'nutriwise:custom_logout' %}" class="nav-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <button style="background-color: #D32F2F;">Logout</button>
+        </a>
+        
         </nav>
       </div>
     </aside>
@@ -90,60 +92,59 @@
       <div id="profile-section" class="content-section">
         <h1>User Profile</h1>
         <form method="POST" action="{% url 'nutriwise:profile' %}" class="profile-form">
-            {% csrf_token %}
-            <b><label for="age">Age:</label></b>
-            <input type="number" name="age" id="age" value="{{ profile.age }}" required>
-    
-            <label for="gender">Gender:</label>
-            <select name="gender" id="gender" required>
-                <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
-                <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
-            </select>
-    
-            <label for="height">Height (cm):</label>
-            <input type="number" name="height" id="height" value="{{ profile.height }}" required>
-    
-            <label for="weight">Weight (kg):</label>
-            <input type="number" name="weight" id="weight" value="{{ profile.weight }}" required>
-    
-            <!-- New fields for goals -->
-            <label for="calorie_goal">Calorie Goal:</label>
-            <input type="number" name="calorie_goal" id="calorie_goal" value="{{ profile.calorie_goal }}" required>
-    
-            <label for="protein_goal">Protein Goal (grams):</label>
-            <input type="number" name="protein_goal" id="protein_goal" value="{{ profile.protein_goal }}" required>
-    
-            <label for="carbs_goal">Carbohydrate Goal (grams):</label>
-            <input type="number" name="carbs_goal" id="carbs_goal" value="{{ profile.carbs_goal }}" required>
-    
-            <label for="fats_goal">Fat Goal (grams):</label>
-            <input type="number" name="fats_goal" id="fats_goal" value="{{ profile.fats_goal }}" required>
-    
-            <div class="notification-settings">
-                <label for="enable_notifications">Enable Notifications:</label>
-                <input type="checkbox" name="enable_notifications" id="enable_notifications" {% if profile.enable_notifications %}checked{% endif %}>
-    
-                <label for="notify_on_exceed">Notify on Exceed:</label>
-                <input type="checkbox" name="notify_on_exceed" id="notify_on_exceed" {% if profile.notify_on_exceed %}checked{% endif %}>
-    
-                  </div>
-    
-            <!-- Diet preferences -->
-            <label for="diet_type">Diet Type:</label>
-            <select name="diet_type" id="diet_type">
-                <option value="None" {% if profile.diet_type == 'None' %}selected{% endif %}>None</option>
-                <option value="Vegetarian" {% if profile.diet_type == 'Vegetarian' %}selected{% endif %}>Vegetarian</option>
-                <option value="Vegan" {% if profile.diet_type == 'Vegan' %}selected{% endif %}>Vegan</option>
-                <option value="Keto" {% if profile.diet_type == 'Keto' %}selected{% endif %}>Keto</option>
-                <option value="Paleo" {% if profile.diet_type == 'Paleo' %}selected{% endif %}>Paleo</option>
-            </select>
-    
-            <label for="food_restrictions">Food Restrictions:</label>
-            <textarea name="food_restrictions" id="food_restrictions">{{ profile.food_restrictions }}</textarea>
-    
-            <button type="submit">Save</button>
-        </form>
-      </div>
+          {% csrf_token %}
+          <b><label for="age">Age:</label></b>
+          <input type="number" name="age" id="age" value="{{ profile.age }}" required>
+      
+          <label for="gender">Gender:</label>
+          <select name="gender" id="gender" required>
+              <option value="Male" {% if profile.gender == "Male" %}selected{% endif %}>Male</option>
+              <option value="Female" {% if profile.gender == "Female" %}selected{% endif %}>Female</option>
+          </select>
+      
+          <label for="height">Height (cm):</label>
+          <input type="number" name="height" id="height" value="{{ profile.height }}" required>
+      
+          <label for="weight">Weight (kg):</label>
+          <input type="number" name="weight" id="weight" value="{{ profile.weight }}" required>
+      
+          <!-- Additional fields for goals -->
+          <label for="calorie_goal">Calorie Goal:</label>
+          <input type="number" name="calorie_goal" id="calorie_goal" value="{{ profile.calorie_goal }}" required>
+      
+          <label for="protein_goal">Protein Goal (grams):</label>
+          <input type="number" name="protein_goal" id="protein_goal" value="{{ profile.protein_goal }}" required>
+      
+          <label for="carbs_goal">Carbohydrate Goal (grams):</label>
+          <input type="number" name="carbs_goal" id="carbs_goal" value="{{ profile.carbs_goal }}" required>
+      
+          <label for="fats_goal">Fat Goal (grams):</label>
+          <input type="number" name="fats_goal" id="fats_goal" value="{{ profile.fats_goal }}" required>
+      
+          <div class="notification-settings">
+              <label for="enable_notifications">Enable Notifications:</label>
+              <input type="checkbox" name="enable_notifications" id="enable_notifications" {% if profile.enable_notifications %}checked{% endif %}>
+      
+              <label for="notify_on_exceed">Notify on Exceed:</label>
+              <input type="checkbox" name="notify_on_exceed" id="notify_on_exceed" {% if profile.notify_on_exceed %}checked{% endif %}>
+          </div>
+      
+          <!-- Diet preferences -->
+          <label for="diet_type">Diet Type:</label>
+          <select name="diet_type" id="diet_type">
+              <option value="None" {% if profile.diet_type == 'None' %}selected{% endif %}>None</option>
+              <option value="Vegetarian" {% if profile.diet_type == 'Vegetarian' %}selected{% endif %}>Vegetarian</option>
+              <option value="Vegan" {% if profile.diet_type == 'Vegan' %}selected{% endif %}>Vegan</option>
+              <option value="Keto" {% if profile.diet_type == 'Keto' %}selected{% endif %}>Keto</option>
+              <option value="Paleo" {% if profile.diet_type == 'Paleo' %}selected{% endif %}>Paleo</option>
+          </select>
+      
+          <label for="food_restrictions">Food Restrictions:</label>
+          <textarea name="food_restrictions" id="food_restrictions">{{ profile.food_restrictions }}</textarea>
+      
+          <button type="submit">Save</button>
+      </form>
+</div>      
 
 
 
