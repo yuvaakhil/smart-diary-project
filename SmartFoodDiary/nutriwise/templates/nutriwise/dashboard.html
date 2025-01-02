@@ -97,7 +97,7 @@
             <div class="image-card">
                 <img src="{{ entry.food_image.url }}" alt="{{ entry.food_name }}" class="food-image">
                 <div class="image-details">
-                    <p><strong>{{ entry.food_name }}</strong></p>
+                    <p><strong>{{ entry.food_name|capfirst  }}</strong></p>
                     <p>Calories: {{ entry.calories }} kcal</p>
                     <p>Carbs: {{ entry.carbs }} g</p>
                     <p>Protein: {{ entry.protein }} g</p>

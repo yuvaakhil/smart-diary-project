@@ -131,34 +131,75 @@ def prepare_data_for_recommendation(user_profile, meal_features, meals):
 
 
 def suggest_meals(user_profile, meal_features, meals):
-    """Suggest meals based on user profile and meal features."""
-    # Check if we have any meals to work with
-    if len(meals) == 0:
-        return []
+    
+    """Suggest meals based on user profile, recent food intake, and daily goals."""
+    # Fetch food entries for the last 24 hours
+    food_entries = FoodDiaryEntry.objects.filter(user=user_profile.user, timestamp__gte=last_24_hours)
+    
+    # Aggregate user's daily intake
+    aggregated_data = food_entries.aggregate(
+        total_calories=Sum('calories'),
+        total_protein=Sum('protein'),
+        total_carbs=Sum('carbs'),
+        total_fats=Sum('fats'),
+    )
+    
+    # Extract user totals
+    user_totals = {
+        'calories': aggregated_data.get('total_calories', 0) or 0,
+        'protein': aggregated_data.get('total_protein', 0) or 0,
+        'carbs': aggregated_data.get('total_carbs', 0) or 0,
+        'fats': aggregated_data.get('total_fats', 0) or 0,
+    }
+    
+    # Goals
+    user_goals = {
+        'calories': user_profile.calorie_goal,
+        'protein': user_profile.protein_goal,
+        'carbs': user_profile.carbs_goal,
+        'fats': user_profile.fats_goal,
+    }
+    
+    # Determine needs
+    needs = {
+        nutrient: user_goals[nutrient] - user_totals[nutrient]
+        for nutrient in user_goals
+    }
+    
+    # Prepare recommendations
+    recommendations = []
+    for i, meal in enumerate(meals):
+        # Extract meal features
+        meal_calories, meal_protein, meal_carbs, meal_fats = meal_features[i]
         
-    # Prepare data for model
-    user_features, _, _ = prepare_data_for_recommendation(user_profile, meal_features, meals)
+        # Filter meals based on needs
+        if needs['calories'] < 0 and meal_calories < 300:
+            # Recommend low-calorie meals
+            recommendations.append((meals[i], meal_features[i]))
+        elif needs['protein'] > 0 and meal_protein > 10:
+            # Recommend protein-rich meals
+            recommendations.append((meals[i], meal_features[i]))
+        elif needs['carbs'] > 0 and meal_carbs > 15:
+            # Recommend carb-rich meals
+            recommendations.append((meals[i], meal_features[i]))
+        elif needs['fats'] > 0 and meal_fats > 5:
+            # Recommend fat-rich meals
+            recommendations.append((meals[i], meal_features[i]))
     
-    # Ensure there are enough meals to train the model
-    n_neighbors = min(5, len(meals))  # Use a maximum of 5 neighbors or the number of meals
-    if n_neighbors < 1:
-        return []
+    # Sort recommendations by priority (lowest calories or highest deficiency compensation)
+    recommendations = sorted(
+        recommendations,
+        key=lambda x: (
+            abs(needs['calories']) - x[1][0],  # Closest calorie match
+            abs(needs['protein']) - x[1][1],  # Closest protein match
+            abs(needs['carbs']) - x[1][2],    # Closest carb match
+            abs(needs['fats']) - x[1][3],     # Closest fat match
+        )
+    )
     
-    # Train a KNN model
-    knn = NearestNeighbors(n_neighbors=n_neighbors)
-    knn.fit(meal_features)
-    
-    # Find the closest meals based on the user's current intake
-    distances, indices = knn.kneighbors(user_features)
-    
-    # Convert indices to integers before using them for list indexing
-    indices = indices.flatten()  # Flatten the array
-    indices = [int(i) for i in indices]  # Convert numpy int64 to Python int
-    
-    # Get recommended meals
-    recommended_meals = [meals[i] for i in indices]
-    
-    return recommended_meals
+    # Return the top recommendations
+    return [meal[0] for meal in recommendations[:5]]  # Top 5 recommendations
+
 
 
 

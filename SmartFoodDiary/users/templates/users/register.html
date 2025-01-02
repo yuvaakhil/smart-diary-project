@@ -28,16 +28,17 @@
     </style>
 </head>
 {% if form.errors %}
-    <div class="form-errors">
-        <ul>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
             {% for field in form %}
                 {% for error in field.errors %}
-                    <li>{{ field.label }}: {{ error }}</li>
+                    alert("{{ field.label }}: {{ error }}");
                 {% endfor %}
             {% endfor %}
-        </ul>
-    </div>
+        });
+    </script>
 {% endif %}
+
 
 
 <body>

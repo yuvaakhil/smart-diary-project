@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'users',
     'recommendations',
+    'django_q',
 ]
 
 MIDDLEWARE = [
@@ -182,3 +183,14 @@ import requests
 
 # Suppress HTTP request logs
 logging.getLogger("requests.packages.urllib3").setLevel(logging.WARNING)
+
+Q_CLUSTER = {
+    'name': 'DjangoQ',
+    'workers': 4,
+    'recycle': 500,
+    'timeout': 60,
+    'queue_limit': 50,
+    'bulk': 10,
+    'orm': 'default',  # Use the ORM for scheduling
+}
+

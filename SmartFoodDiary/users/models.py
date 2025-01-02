@@ -15,6 +15,20 @@ class UserProfile(models.Model):
         null=True,
     )
     bmi = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)  # BMI value
+    calorie_goal = models.PositiveIntegerField(default=2000)  # Daily calorie target
+    protein_goal = models.FloatField(default=50.0)  # Protein target in grams
+    carbs_goal = models.FloatField(default=300.0)  # Carbohydrate target in grams
+    fats_goal = models.FloatField(default=70.0)  # Fat target in grams
+    enable_notifications = models.BooleanField(default=True)  # Enable/disable notifications
+    notify_on_exceed = models.BooleanField(default=False)  # Add this field
+    notify_on_deficit = models.BooleanField(default=False)  # Add this field
+    diet_type = models.CharField(
+        max_length=20,
+        choices=[('None', 'None'), ('Vegetarian', 'Vegetarian'), ('Vegan', 'Vegan'), ('Keto', 'Keto'), ('Paleo', 'Paleo')],
+        default='None'
+    )
+    food_restrictions = models.TextField(null=True, blank=True)
+    last_notified = models.DateTimeField(null=True, blank=True)
     
     def calculate_bmi(self):
         """
