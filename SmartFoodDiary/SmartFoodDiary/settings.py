@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'users',
     'recommendations',
-    'django_q',
+    
 ]
 
 MIDDLEWARE = [
@@ -178,19 +178,23 @@ LOGIN_URL = 'users:login'  # Redirect to login page if not authenticated
 # This ensures the user is redirected to the login page after logout
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+import os
 import logging
-import requests
+import warnings
+import tensorflow as tf
 
-# Suppress HTTP request logs
+# Suppress TensorFlow logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress info, warnings, and errors
+logging.getLogger('tensorflow').setLevel(logging.ERROR)  # Suppress TensorFlow logs globally
+
+# Disable Cloud TPU warning (if not using TPU)
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disables GPU, stopping related messages
+# Disable oneDNN custom operations to avoid warnings
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+
+# Suppress all matplotlib warnings
+warnings.filterwarnings("ignore", category=UserWarning, module='matplotlib')
+warnings.filterwarnings("ignore", category=DeprecationWarning, module='matplotlib')
+
+# Suppress HTTP request logs (requests library)
 logging.getLogger("requests.packages.urllib3").setLevel(logging.WARNING)
-
-Q_CLUSTER = {
-    'name': 'DjangoQ',
-    'workers': 4,
-    'recycle': 500,
-    'timeout': 60,
-    'queue_limit': 50,
-    'bulk': 10,
-    'orm': 'default',  # Use the ORM for scheduling
-}
-
