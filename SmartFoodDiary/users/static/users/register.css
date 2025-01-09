@@ -10,13 +10,13 @@
 body {
     background-image: url('https://i.postimg.cc/K8jQbK4X/Whats-App-Image-2024-11-25-at-20-57-41-b921d103.jpg');
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding: 20px;
+    width: 100%;
+    margin: 0;
     color: #fff; /* Default text color is white */
-    width: 80vw; /* 80% of the viewport width */
-    margin: 0 auto; /* Center the page horizontally */
 }
 .invalid {
     border: 1px solid red;
@@ -28,13 +28,13 @@ body {
 
 
 .container {
-    max-width: 500px;
+    max-width: 400px;
     width: 100%;
-    background:  #dbf7d2; /* White container */
-    color: #000; /* Black text inside the container */
-    padding: 15px 10px;
-    border-radius: 10px; /* Rounded corners */
-    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1); /* Subtle white shadow */
+    background: #dbf7d2;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1);
+    margin: 0 auto;
 }
 
 .container .title {
@@ -56,14 +56,14 @@ body {
 
 .container form .user-details {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin: 20px 0 12px 0;
+    flex-direction: column;
+    gap: 15px;
+    margin: 20px 0;
 }
 
 form .user-details .input-box {
-    margin: 15px;
-    width: calc(100% / 2 - 20px);
+    width: 100%;
+    margin: 0;
 }
 
 .user-details .input-box .details {
@@ -74,17 +74,14 @@ form .user-details .input-box {
 }
 
 .user-details .input-box input {
-    height: 45px;
     width: 100%;
-    outline: none;
-    border-radius: 10px;
-    border: 1.5px solid #ccc; /* Light gray border */
-    padding-left: 15px;
+    height: 45px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background-color: #fff;
     font-size: 16px;
-    border-bottom-width: 2px;
-    background-color: #fff; /* White input background */
-    color: #000; /* Black input text */
-    transition: all 0.3s ease;
+    box-sizing: border-box;
 }
 
 .user-details .input-box input:focus,
@@ -134,34 +131,40 @@ form .gender-details .category {
 }
 
 form .button {
-    width: 100%;
-    height: 50px;
     margin-top: 20px;
+    height: 45px;
 }
 
 form .button input {
-    height: 100%;
     width: 100%;
-    outline: none;
-    color: #fff; /* White text */
-    border: none;
-    font-size: 18px;
+    height: 100%;
+    border-radius: 5px;
+    background: #000;
+    color: #fff;
+    font-size: 16px;
     font-weight: 500;
-    border-radius: 10px;
-    letter-spacing: 1px;
-    background: #000; /* Black button */
-    transition: 0.3s ease;
+    cursor: pointer;
 }
 
 form .button input:hover {
     background: #333; /* Dark gray hover effect */
 }
 
-.p {
+.container p {
     text-align: center;
-    color: #fff; /* White text for paragraph */
+    color: #000;  /* Change from white to black */
     font-size: 14px;
-    margin: 5px 0;
+    margin-top: 15px;
+}
+
+.container p a {
+    color: #007bff;  /* Change from black to light blue */
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.container p a:hover {
+    color: #0056b3;  /* Darker blue on hover */
 }
 
 

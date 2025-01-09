@@ -30,9 +30,20 @@ def dashboard(request):
     Render the main dashboard.
     The user must be logged in to access.
     """
-    user_profile = UserProfile.objects.filter(user=request.user).first()
+    # Get or create the user profile
+    user_profile, created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'calorie_goal': 2000,
+            'protein_goal': 50.0,
+            'carbs_goal': 300.0,
+            'fats_goal': 70.0,
+        }
+    )
+    
     uploaded_images = FoodDiaryEntry.objects.filter(user=request.user).order_by('-timestamp')[:3]
     notifications = Notification.objects.filter(user=request.user).order_by('-created_at')[:5]
+    
     context = {
         'user': request.user,
         'user_profile': user_profile,
