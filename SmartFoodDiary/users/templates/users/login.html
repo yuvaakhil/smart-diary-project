@@ -4,7 +4,8 @@
     <link rel="stylesheet" type="text/css" href="{% static 'users/login.css' %}">
 </head>
 <title>Login</title>
-<form method="post" action="{% url 'users:login' %}?next=/nutriwise/" class="form">
+
+<form method="post" action="{% url 'users:login' %}?next=/nutriwise/" class="form" novalidate>
     {% if messages %}
     <div class="message-container">
         {% for message in messages %}
@@ -14,6 +15,7 @@
 {% endif %}
 
     {% csrf_token %}
+    <div class="title">Login </div>
     <div class="flex-column">
         <label><b>Username</b></label>
     </div>
@@ -21,8 +23,9 @@
         <svg height="20" viewBox="0 0 32 32" width="20" xmlns="http://www.w3.org/2000/svg">
             <path d="M30.853 13.87a15 15 0 0 0 -29.729 4.082 15.1 15.1 0 0 0 12.876 12.918 15.6 15.6 0 0 0 2.016.13 14.85 14.85 0 0 0 7.715-2.145 1 1 0 1 0 -1.031-1.711 13.007 13.007 0 1 1 5.458-6.529 2.149 2.149 0 0 1 -4.158-.759v-10.856a1 1 0 0 0 -2 0v1.726a8 8 0 1 0 .2 10.325 4.135 4.135 0 0 0 7.83.274 15.2 15.2 0 0 0 .823-7.455zM16 22a6 6 0 1 1 6-6 6.006 6.006 0 0 1 -6 6z"></path>
         </svg>
-        <input type="text" name="username" class="input" placeholder="Enter your username" required id="username" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill in the username')">
+        <input type="text" name="username" class="input" placeholder="Enter your username" required id="username">
     </div>
+    <div class="error-text" id="username-error"></div>
 
     <div class="flex-column">
         <label><b>Password</b></label>
@@ -32,23 +35,91 @@
             <path d="M336 512H48C21.547 512 0 490.477 0 464V240c0-26.476 21.547-48 48-48h288c26.453 0 48 21.524 48 48v224c0 26.477-21.547 48-48 48zM48 224c-8.812 0-16 7.168-16 16v224c0 8.832 7.188 16 16 16h288c8.812 0 16-7.168 16-16V240c0-8.832-7.188-16-16-16z"></path>
             <path d="M304 224c-8.832 0-16-7.168-16-16v-80c0-52.93-43.07-96-96-96s-96 43.07-96 96v80c0 8.832-7.168 16-16 16s-16-7.168-16-16v-80C128 57.406 185.406 0 256 0s128 57.406 128 128v80c0 8.832-7.168 16-16 16z"></path>
         </svg>
-         <input id="password" type="password" name="password" class="input" placeholder="Enter your Password" required oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill in the password')">
+        <input id="password" type="password" name="password" class="input" placeholder="Enter your Password" required>
         <svg id="togglePassword" viewBox="0 0 576 512" height="20" width="20" xmlns="http://www.w3.org/2000/svg" style="cursor: pointer;">
             <path d="M288 32C80.8 32 16.5 68.8-30.6 112.6c-46.1 43.8-77.4 95.7-92.3 131.4-3.3 7.9-3.3 16.7 0 24.6 14.9 35.7 46.2 87.7 93 131.1C141.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1 3.3-7.9 3.3-16.7 0-24.6-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64-7.1 0-13.9-1.2-20.3-3.3-5.5-1.8-11.9 1.6-11.7 7.4.3 6.9 1.3 13.8 3.2 20.7 13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1-5.8-.2-9.2 6.1-7.4 11.7 2.1 6.4 3.3 13.2 3.3 20.3z"></path>
         </svg>
     </div>
+    <div class="error-text" id="password-error"></div>
 
     <button class="button-submit" type="submit">Sign In</button>
     <p class="p">Don't have an account? <a href="{% url 'users:register' %}" class="span">Sign Up</a></p>
-    
+   
+
+    <div class="flex-row">
+        
+        
+    </div>
 </form>
 
 
 <script>
-    // JavaScript to toggle password visibility
+    // Password toggle functionality
     document.getElementById('togglePassword').addEventListener('click', function () {
         const passwordField = document.getElementById('password');
         const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordField.setAttribute('type', type);
+    });
+
+    // Form validation
+    const form = document.querySelector('form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const usernameError = document.getElementById('username-error');
+    const passwordError = document.getElementById('password-error');
+
+    // Function to show error
+    function showError(input, errorElement, message) {
+        input.closest('.inputForm').classList.add('error');
+        errorElement.textContent = message;
+        errorElement.style.color = '#ff0000';
+    }
+
+    // Function to clear error
+    function clearError(input, errorElement) {
+        input.closest('.inputForm').classList.remove('error');
+        errorElement.textContent = '';
+    }
+
+    // Add input event listeners to validate in real-time
+    usernameInput.addEventListener('input', function() {
+        if (!this.value.trim()) {
+            showError(this, usernameError, 'Please fill in the username');
+        } else {
+            clearError(this, usernameError);
+        }
+    });
+
+    passwordInput.addEventListener('input', function() {
+        if (!this.value.trim()) {
+            showError(this, passwordError, 'Please fill in the password');
+        } else {
+            clearError(this, passwordError);
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Always prevent default first
+        let isValid = true;
+        
+        // Reset error messages
+        clearError(usernameInput, usernameError);
+        clearError(passwordInput, passwordError);
+
+        // Username validation
+        if (!usernameInput.value.trim()) {
+            showError(usernameInput, usernameError, 'Please fill in the username');
+            isValid = false;
+        }
+
+        // Password validation
+        if (!passwordInput.value.trim()) {
+            showError(passwordInput, passwordError, 'Please fill in the password');
+            isValid = false;
+        }
+
+        if (isValid) {
+            form.submit(); // Manually submit the form if validation passes
+        }
     });
 </script>

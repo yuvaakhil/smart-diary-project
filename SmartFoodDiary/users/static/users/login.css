@@ -173,3 +173,68 @@ h1 {
       font-size: 0.8rem;
   }
 }
+.title {
+  font-size: 2rem; /* Increase font size for better visibility */
+  font-weight: 600; /* Make the title bolder */
+  position: relative;
+  color: #333; /* Dark gray for a softer look */
+  text-align: center; /* Center-align the title */
+  padding: 10px 20px; /* Add padding for spacing */
+  margin-bottom: 20px; /* Space below the title */
+  text-transform: uppercase; /* Optional: Make the text uppercase for emphasis */
+  letter-spacing: 1px; /* Add slight spacing between letters */
+}
+
+.title::before {
+  content: '';
+  position: absolute;
+  left: 50%; /* Center the underline */
+  bottom: 0;
+  transform: translateX(-50%); /* Adjust for true centering */
+  height: 3px;
+  width: 50px; /* Make the underline wider */
+  background-color: #4caf50; /* Add a green accent underline */
+  border-radius: 3px; /* Rounded edges for the underline */
+  transition: width 0.3s ease-in-out; /* Smooth animation on hover */
+}
+
+.title:hover::before {
+  width: 100px; /* Extend the underline on hover */
+  background-color: #8bc34a; /* Slightly lighter green for hover */
+}
+
+/* Add these styles to your existing CSS */
+.error-text {
+    color: #ff0000;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+/* Optional: Add a red border to inputs when they're invalid */
+.input:invalid {
+    border-color: #dc3545;
+}
+
+/* Remove the default browser validation popup */
+input:invalid {
+    box-shadow: none;
+}
+
+/* Remove the default browser validation outline */
+input:focus:invalid {
+    outline: none;
+}
+
+/* Add styles for input fields with errors */
+.inputForm.error {
+    border-color: #ff0000;
+}
+
+.inputForm.error input {
+    color: #ff0000;
+}
+
+.inputForm.error svg {
+    color: #ff0000;
+}

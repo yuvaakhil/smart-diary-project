@@ -25,6 +25,7 @@
         .valid {
             border: 2px solid green;
         }
+        
     </style>
 </head>
 {% if form.errors %}
@@ -44,51 +45,45 @@
 <body>
     <div class="container">
         <div class="title">Create an Account</div>
-        <form method="POST" action="{% url 'users:register' %}" id="registration-form">
+        <form method="POST" action="{% url 'users:register' %}" id="registration-form" novalidate>
             {% csrf_token %}
             <div class="user-details">
                 <div class="input-box">
                     <span class="details">Full Name*</span>
-                    <input type="text" name="full_name" id="full_name" placeholder="Enter your full name" required value="{{ form.full_name.value|default:'' }}" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill the fullname')">
+                    <input type="text" name="full_name" id="full_name" placeholder="Enter your full name">
                     <div class="error-message" id="full-name-error"></div>
                 </div>
                 <div class="input-box">
                     <span class="details">Username*</span>
-                    <input type="text" name="username" id="username" placeholder="Enter your username" required value="{{ form.username.value|default:'' }}" 
-                        class="{% if form.username.errors %}invalid{% endif %}" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill the Username')">
+                    <input type="text" name="username" id="username" placeholder="Enter your username">
                     <div class="error-message" id="username-error"></div>
                 </div>
                 <div class="input-box">
                     <span class="details">Email*</span>
-                    <input type="email" name="email" id="email" placeholder="Enter your email" required value="{{ form.email.value|default:'' }}" 
-                        class="{% if form.email.errors %}invalid{% endif %}" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill the email')">
+                    <input type="email" name="email" id="email" placeholder="Enter your email">
                     <div class="error-message" id="email-error"></div>
                 </div>
                 <div class="input-box">
                     <span class="details">Phone Number*</span>
-                    <input type="text" name="phone_number" id="phone_number" placeholder="Enter your phone number" required value="{{ form.phone_number.value|default:'' }}" 
-                        class="{% if form.phone_number.errors %}invalid{% endif %}" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill the phone number')">
+                    <input type="text" name="phone_number" id="phone_number" placeholder="Enter your phone number">
                     <div class="error-message" id="phone-number-error"></div>
                 </div>
                 <div class="input-box">
                     <span class="details">Password*</span>
-                    <input type="password" name="password1" id="password1" placeholder="Enter your password" required 
-                        class="{% if form.password1.errors %}invalid{% endif %}" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill in the password')">
+                    <input type="password" name="password1" id="password1" placeholder="Enter your password">
                     <div class="error-message" id="password1-error"></div>
                 </div>
                 <div class="input-box">
                     <span class="details">Confirm Password*</span>
-                    <input type="password" name="password2" id="password2" placeholder="Confirm your password" required 
-                        class="{% if form.password2.errors %}invalid{% endif %}" oninput="this.setCustomValidity('')" oninvalid="this.setCustomValidity('Please fill in the password')">
+                    <input type="password" name="password2" id="password2" placeholder="Confirm your password">
                     <div class="error-message" id="password2-error"></div>
                 </div>
             </div>
-            
             <div class="button">
-                
                 <input type="submit" value="Register">
             </div>
         </form>
+        
         <p>Already have an account? <a href="{% url 'users:login' %}">Login here</a></p>
     </div>
 
@@ -100,93 +95,95 @@
         </div>
     {% endif %}
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const fields = [
-                {
-                    id: 'username',
-                    errorId: 'username-error',
-                    validation: value => /^(?=.*[@/])[a-zA-Z0-9@/]{8,}$/.test(value),
-                    validMessage: 'Valid username',
-                    invalidMessage: 'Username must be at least 8 characters and include one of the following: @, /, or _'
-                },
-                {
-                    id: 'email',
-                    errorId: 'email-error',
-                    validation: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
-                    validMessage: 'Valid email address',
-                    invalidMessage: 'Invalid email format'
-                },
-                {
-                    id: 'phone_number',
-                    errorId: 'phone-number-error',
-                    validation: value => /^\d{10}$/.test(value),
-                    validMessage: 'Valid phone number',
-                    invalidMessage: 'Phone number must contain exactly 10 digits'
-                },
-                {
-                    id: 'password1',
-                    errorId: 'password1-error',
-                    validation: value => value.length >= 8,
-                    validMessage: 'Valid password',
-                    invalidMessage: 'Password must contain at least 8 characters'
-                },
-                {
-                    id: 'password2',
-                    errorId: 'password2-error',
-                    validation: value => value === document.getElementById('password1').value,
-                    validMessage: '✓',
-                    invalidMessage: 'Passwords must match'
-                }
-            ];
-        
-            fields.forEach(({ id, errorId, validation, validMessage, invalidMessage }) => {
-                const input = document.getElementById(id);
-                const errorElement = document.getElementById(errorId);
-        
-                input.addEventListener('input', () => {
-                    const value = input.value;
-                    if (validation(value)) {
-                        input.classList.add('valid');
-                        input.classList.remove('invalid');
-                        errorElement.textContent = validMessage;
-                        errorElement.classList.remove('error-message');
-                        errorElement.classList.add('valid-message');
-                    } else {
-                        input.classList.add('invalid');
-                        input.classList.remove('valid');
-                        errorElement.textContent = invalidMessage;
-                        errorElement.classList.remove('valid-message');
-                        errorElement.classList.add('error-message');
-                    }
-                });
-            });
-    
-            // AJAX call for email uniqueness check
-            const emailInput = document.getElementById('email');
-            const emailError = document.getElementById('email-error');
-    
-            emailInput.addEventListener('blur', () => {
-                const email = emailInput.value;
-                if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                    fetch("{% url 'users:check_email' %}?email=" + encodeURIComponent(email))
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.exists) {
-                                emailInput.classList.add('invalid');
-                                emailInput.classList.remove('valid');
-                                emailError.textContent = 'This email is already registered.';
-                                emailError.classList.remove('valid-message');
-                                emailError.classList.add('error-message');
-                            } else {
-                                emailInput.classList.add('valid');
-                                emailInput.classList.remove('invalid');
-                                emailError.textContent = 'Valid email address';
-                                emailError.classList.remove('error-message');
-                                emailError.classList.add('valid-message');
-                            }
-                        });
-                }
-            });
+   
+       <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('registration-form');
+    const fields = [
+        {
+            id: 'full_name',
+            errorId: 'full-name-error',
+            validation: value => value.trim() !== '',
+            invalidMessage: 'Please fill out your Full Name'
+        },
+        {
+            id: 'username',
+            errorId: 'username-error',
+            validation: value => /^(?=.*[@/_])[a-zA-Z0-9@/_]{8,}$/.test(value),
+            invalidMessage: 'Username must be at least 8 characters and include @, /, or _'
+        },
+        {
+            id: 'email',
+            errorId: 'email-error',
+            validation: value => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+            invalidMessage: 'Please provide a valid email address'
+        },
+        {
+            id: 'phone_number',
+            errorId: 'phone-number-error',
+            validation: value => /^\d{10}$/.test(value),
+            invalidMessage: 'Phone number must contain exactly 10 digits'
+        },
+        {
+            id: 'password1',
+            errorId: 'password1-error',
+            validation: value => value.length >= 8,
+            invalidMessage: 'Password must contain at least 8 characters'
+        },
+        {
+            id: 'password2',
+            errorId: 'password2-error',
+            validation: value => value === document.getElementById('password1').value,
+            invalidMessage: 'Passwords must match'
+        }
+    ];
+
+    // Validate each field on input
+    fields.forEach(({ id, errorId, validation, invalidMessage }) => {
+        const input = document.getElementById(id);
+        const errorElement = document.getElementById(errorId);
+
+        input.addEventListener('input', () => {
+            const value = input.value.trim();
+            if (validation(value)) {
+                input.classList.remove('invalid');
+                input.classList.add('valid');
+                errorElement.textContent = ''; // Clear error message
+            } else {
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                errorElement.textContent = invalidMessage; // Show error message
+            }
         });
-    </script>
+    });
+
+    // Validate all fields on form submit
+    form.addEventListener('submit', (e) => {
+        let formValid = true;
+
+        fields.forEach(({ id, errorId, validation, invalidMessage }) => {
+            const input = document.getElementById(id);
+            const errorElement = document.getElementById(errorId);
+            const value = input.value.trim();
+
+            if (!validation(value)) {
+                formValid = false;
+                input.classList.add('invalid');
+                errorElement.textContent = invalidMessage;
+            } else {
+                input.classList.remove('invalid');
+                errorElement.textContent = '';
+            }
+        });
+
+        if (!formValid) {
+            e.preventDefault(); // Prevent form submission if validation fails
+        }
+    });
+});
+
+
+</script>
+
+   
+    
