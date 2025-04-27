@@ -1,4 +1,4 @@
-# infosys-smart-diary-project
+# smart-diary-project
 Smart Food Diary
 
 A web application to track daily food intake, analyze nutritional content, and provide personalized dietary recommendations.
