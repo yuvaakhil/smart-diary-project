@@ -1,0 +1,11 @@
+pip install django
+pip install requests
+pip install django-allauth
+pip install Pillow
+pip install torch torchvision torchaudio
+pip install transformers
+pip install pandas
+pip install plotly
+pip install scikit-learn
+pip install xhtml2pdf
+pip install openpyxl
